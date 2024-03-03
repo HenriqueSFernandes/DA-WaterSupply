@@ -1,0 +1,3 @@
+/home/jose/CLionProjects/printImageToTerminal/cmake-build-debug/CMakeFiles/printImageToTerminal.dir
+/home/jose/CLionProjects/printImageToTerminal/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/jose/CLionProjects/printImageToTerminal/cmake-build-debug/CMakeFiles/rebuild_cache.dir
