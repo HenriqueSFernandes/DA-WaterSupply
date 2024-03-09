@@ -6,7 +6,9 @@ on:
   push:
     branches:
       - main
-      - 2-integrar-doxygen
+  pull_request:
+    branches:
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
