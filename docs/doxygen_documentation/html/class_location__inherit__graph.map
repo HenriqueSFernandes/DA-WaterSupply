@@ -1,9 +1,0 @@
-<map id="Location" name="Location">
-<area shape="rect" id="Node000001" title=" " alt="" coords="78,5,149,32"/>
-<area shape="rect" id="Node000002" href="$class_city.html" title=" " alt="" coords="5,80,51,107"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,44,44,82,41,78,85,40"/>
-<area shape="rect" id="Node000003" href="$class_reservoir.html" title=" " alt="" coords="75,80,152,107"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="116,48,116,80,111,80,111,48"/>
-<area shape="rect" id="Node000004" href="$class_station.html" title=" " alt="" coords="176,80,238,107"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="143,40,192,77,189,82,140,44"/>
-</map>
