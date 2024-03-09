@@ -4,3 +4,10 @@
 1	418	1709482276675008891	CMakeFiles/water-supply.dir/main.cpp.o	7634ff53811698af
 1	478	1709482364266443721	CMakeFiles/water-supply.dir/src/SupplyManagement.cpp.o	f2d51bd3cc2bdaf0
 0	323	1709480620969035548	CMakeFiles/water-supply.dir/src/Graph.cpp.o	efbcf674f6a52272
+0	20	1709996576796987729	build.ninja	c0ce26eac48d7f8f
+2	198	1709996577004986132	CMakeFiles/water-supply.dir/src/Location.cpp.o	7ab0aa984b11a762
+2	198	1709996577004986132	CMakeFiles/water-supply.dir/src/City.cpp.o	4e3c8ec38234e05b
+3	199	1709996577004986132	CMakeFiles/water-supply.dir/src/Station.cpp.o	d95fb4d077b191a9
+3	258	1709996577060985702	CMakeFiles/water-supply.dir/src/Reservoir.cpp.o	aed52f87a1a4e2a1
+2	345	1709996577148985026	CMakeFiles/water-supply.dir/src/Graph.cpp.o	efbcf674f6a52272
+1	442	1709996577244984289	CMakeFiles/water-supply.dir/main.cpp.o	7634ff53811698af

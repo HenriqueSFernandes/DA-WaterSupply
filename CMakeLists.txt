@@ -10,6 +10,12 @@ add_executable(water-supply main.cpp
         src/Graph.h
         src/Location.cpp
         src/Location.h
+        src/City.h
+        src/City.cpp
+        src/Reservoir.cpp
+        src/Reservoir.h
+        src/Station.h
+        src/Station.cpp
 
 
 )
