@@ -1,0 +1,6 @@
+# ninja log v5
+478	534	1709482364322443361	water-supply	765538605043dc65
+2	164	1709480892969722738	CMakeFiles/water-supply.dir/src/Location.cpp.o	7ab0aa984b11a762
+1	418	1709482276675008891	CMakeFiles/water-supply.dir/main.cpp.o	7634ff53811698af
+1	478	1709482364266443721	CMakeFiles/water-supply.dir/src/SupplyManagement.cpp.o	f2d51bd3cc2bdaf0
+0	323	1709480620969035548	CMakeFiles/water-supply.dir/src/Graph.cpp.o	efbcf674f6a52272
