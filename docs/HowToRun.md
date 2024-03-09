@@ -1,5 +1,7 @@
 # Run doxygen
 
+The doxygen documentation is automatically created and deployed to [here](https://da-water-supply.vercel.app/).  
+If you wish to manually create the documentation follow these steps.
 ## 1. Install doxygen
 
 ### Ubuntu
@@ -24,5 +26,3 @@ Another way to run doxygen is to navigate to the `docs` folder and run `doxygen 
 ## 3. See the documentation
 
 The webpage will be generated in this directory: `docs/doxygen_documentation/html`.  
-After the documentation is merged to main, you can see it at the following link:  
-`link not available because there is no documentation in the main branch`
