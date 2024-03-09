@@ -17,6 +17,9 @@ public:
 
     int getId() const;
     std::string getCode() const;
+    bool operator==(const Location& other) const {
+        return (code_ == other.code_);
+    }
 };
 
 #endif //LOCATION_H

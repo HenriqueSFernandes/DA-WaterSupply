@@ -6,7 +6,21 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+int parsePoPToInt(const std::string& str) {
+    std::string cleanedStr = str;
 
+    // Remove leading and trailing quotes
+    if (!cleanedStr.empty() && cleanedStr.front() == '"')
+        cleanedStr.erase(0, 1);
+    if (!cleanedStr.empty() && cleanedStr.back() == '"')
+        cleanedStr.pop_back();
+
+    // Remove commas
+    cleanedStr.erase(std::remove(cleanedStr.begin(), cleanedStr.end(), ','), cleanedStr.end());
+
+    // Convert to integer
+    return std::stoi(cleanedStr);
+}
 void SupplyManagement::readCities() {
     cout<<"CITIES"<<endl;
     string city;
@@ -33,15 +47,17 @@ void SupplyManagement::readCities() {
         getline(iss, demand, ',');
         getline(iss, population, '\r');
         cout<<" READ"<<city<<"/"<<id<<"/"<<code<<"/"<<demand<<"/"<<population<<endl;
-        Location location(code); //DUMMY VALUE FOR TESTING WILL USE CITY OBJECT IN FUTURE
-        network.addVertex(location);
+        const string city_=city; //just a quick fix
+        City city=City(stoi(id),code,city_,stod(demand),parsePoPToInt(population));
+
+        network.addVertex(city);
     }
 
     cityCsv.close();
 }
 void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maximum Delivery (m3/sec),,
     cout<<"RESERVOIRS"<<endl;
-    string reservoir;
+    string name;
     string municipality;
     string id;
     string code;
@@ -59,14 +75,15 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
     // Iterate over every line of the file, split the line, create a new class and append that class to the list of classes.
     while (getline(reservoirCsv, line)) {
         istringstream iss(line);
-        getline(iss, reservoir, ',');
+        getline(iss, name, ',');
         getline(iss, municipality, ',');
         getline(iss, id, ',');
         getline(iss, code, ',');
         getline(iss, limit, ',');
-        cout<<" READ "<<reservoir<<"/"<<municipality<<"/"<<id<<"/"<<code<<"/"<<limit<<endl;
-        Location location(code); //DUMMY VALUE FOR TESTING WILL USE CITY OBJECT IN FUTURE
-        network.addVertex(location);
+        cout<<" READ "<<name<<"/"<<municipality<<"/"<<id<<"/"<<code<<"/"<<limit<<endl;
+
+        Reservoir reservoir= Reservoir(stoi(id),code,name,municipality,stod(limit));
+        network.addVertex(reservoir);
     }
 
     reservoirCsv.close();
@@ -92,8 +109,8 @@ void SupplyManagement::readStations() { //Id,Code,,
         getline(iss, code, ',');
         cout<<" READ "<<id<<"/"<<code<<endl;
         if(code=="") break;
-        Location location(code); //DUMMY VALUE FOR TESTING WILL USE CITY OBJECT IN FUTURE
-        network.addVertex(location);
+        Station station(stoi(id),code);
+        network.addVertex(station);
     }
 
     stationCsv.close();
@@ -125,10 +142,13 @@ void SupplyManagement::readPipes() { //Service_Point_A,Service_Point_B,Capacity,
         getline(iss, directed, '\r');
         cout<<" READ "<<codeA<<"/"<<codeB<<"/"<<capacity<<"/"<<directed<<endl;
         double cap=stod(capacity);
+        auto source=network.findVertex(Location(0,codeA));
+        auto dest=network.findVertex(Location(0,codeB));
         if(directed=="0") {
-            network.addBidirectionalEdge(codeA,codeB,cap);
+
+            network.addBidirectionalEdge(source->getInfo(),dest->getInfo(),cap);
         }else {
-            network.addDirectedEdgeWithResidual(codeA,codeB,cap);
+            network.addDirectedEdgeWithResidual(source->getInfo(),dest->getInfo(),cap);
         }
 
     }

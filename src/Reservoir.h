@@ -11,15 +11,15 @@
 class Reservoir : public Location {
 private:
     std::string name_;
-    City municipality_;
+    std::string municipality_;
     double max_delivery_;
 
 public:
-    Reservoir(int id, const std::string& code, const std::string& name, const City& municipality, double max_delivery);
+    Reservoir(int id, const std::string& code, const std::string& name, const std::string& municipality, double max_delivery);
 
     std::string getName() const;
 
-    City getMunicipality() const;
+    std::string getMunicipality() const;
 
     double getMaxDelivery() const;
 };

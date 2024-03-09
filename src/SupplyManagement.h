@@ -6,7 +6,10 @@
 #define SUPPLYMANAGEMENT_H
 #include "Graph.h"
 #include "Location.h"
-#include <string>
+
+#include "City.h"
+#include "Reservoir.h"
+#include "Station.h"
 using namespace std;
 
 
