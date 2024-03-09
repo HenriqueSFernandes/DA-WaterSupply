@@ -13,6 +13,7 @@ protected:
     std::string code_;
 
 public:
+    virtual ~Location() {}
     Location(int id, const std::string& code);
 
     int getId() const;

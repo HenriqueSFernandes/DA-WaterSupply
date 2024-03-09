@@ -2,7 +2,8 @@
 // Created by jose on 3/3/24.
 //
 #include "src/SupplyManagement.h"
-
+#include <sstream>
+#include <iostream>
 int main() {
     cout<<"here"<<endl;
     SupplyManagement managerTester=SupplyManagement("../data/Cities_Madeira.csv","../data/Reservoirs_Madeira.csv","../data/Stations_Madeira.csv","../data/Pipes_Madeira.csv");
@@ -18,6 +19,17 @@ int main() {
             cout<<" HAS AN EDGE TO"<<edge->getDest()->getInfo().getCode()<< " OF CAPACITY"<<edge->getCapacity()<<endl;
         }
     }
+    cout<<"DOING EDMOND KARP"<<endl;
+    std::stringstream ss;
+    cout << managerTester.edmondsKarp(Location(-1,"SOURCE"), Location(-1,"SINK"));
+    for (auto v : managerTester.getNetwork().getVertexSet()) {
+        ss << v->getInfo().getCode() << "-> (";
+        for (const auto e : v->getAdj())
+            ss << (e->getDest())->getInfo().getCode() << "[Flow: " << e->getFlow() << "] ";
+        ss << ") || ";
+    }
+    std::cout << ss.str() << std::endl << std::endl;
+
 
     return 0;
 }

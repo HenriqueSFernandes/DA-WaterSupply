@@ -97,7 +97,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
 
         Reservoir reservoir= Reservoir(stoi(id),code,name,municipality,stod(limit));
         network.addVertex(reservoir);
-        network.addDirectedEdgeWithResidual(SuperSource->getInfo(),reservoir,INT_MAX);
+        network.addDirectedEdgeWithResidual(SuperSource->getInfo(),reservoir,stod(limit));
     }
 
     reservoirCsv.close();
@@ -176,5 +176,72 @@ const Graph<Location> &SupplyManagement::getNetwork() const {
 
 void SupplyManagement::setNetwork(const Graph<Location> &network) {
     SupplyManagement::network = network;
+}
+void setUnvisited(Graph<Location> *g) {
+    for( auto el : g->getVertexSet()) {
+        el->setVisited(false);
+
+    }
+}
+void initiateGraphFlow(Graph<Location> *g) {
+    for( auto el : g->getVertexSet()) {
+        for( auto edge : el->getAdj()) {
+            edge->setFlow(0);
+        }
+    }
+}
+int SupplyManagement::edmondsKarp( Location source, Location target) {
+    // O algorithmo de edmond karp uso bfs
+    int curflow=-1;
+    int res=0;
+    initiateGraphFlow(&network);
+    while(curflow!=0) {
+        setUnvisited(&network);
+        curflow=bfsEdmond(source, target);
+        res+=curflow;
+    }
+    return res;
+}
+
+int SupplyManagement::bfsEdmond(Location source, Location target) {
+
+    queue<Vertex<Location> *> myQueue;
+    auto sourceVertex= network.findVertex(source);
+    sourceVertex->setVisited(true);
+    myQueue.push(sourceVertex);
+    while(!myQueue.empty()) {
+        auto cur=myQueue.front();
+        myQueue.pop();
+        if(cur->getInfo()==target) {
+            if(cur->getPath()==NULL) return 0;
+            else {
+                int bottleNeck=cur->getPath()->getCapacity();
+                auto edge=cur->getPath();
+                while(edge != NULL) {
+                    bottleNeck=min((int)(edge->getCapacity()-edge->getFlow()),bottleNeck);
+                    edge=edge->getOrig()->getPath();
+                }
+                int res=bottleNeck;
+                edge=cur->getPath();
+                while((edge != NULL)) {
+                    edge->setFlow(edge->getFlow()+bottleNeck);
+                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity()+bottleNeck);
+                    edge=edge->getOrig()->getPath();
+                }
+
+                return res;
+            }
+        }
+        for( auto edge : cur->getAdj()) {
+            if(edge->getCapacity()-edge->getFlow()>0 && !edge->getDest()->isVisited())  { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+                edge->getDest()->setVisited(true);
+                edge->getDest()->setPath(edge);
+                myQueue.push(edge->getDest());
+            }
+
+        }
+    }
+
+    return 0;
 }
 

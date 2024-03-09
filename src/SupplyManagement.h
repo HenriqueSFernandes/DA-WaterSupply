@@ -28,6 +28,8 @@ public:
     void readStations();
     void readPipes();
     void assembleGraph();
+    int edmondsKarp( Location source, Location target);
+    int bfsEdmond(Location source, Location target);
 
     private:
     Graph<Location> network;
