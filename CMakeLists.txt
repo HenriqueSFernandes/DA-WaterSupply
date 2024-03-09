@@ -16,6 +16,7 @@ add_executable(water-supply main.cpp
         src/Reservoir.h
         src/Station.h
         src/Station.cpp
+        src/SpecialLocation.h
 
 
 )

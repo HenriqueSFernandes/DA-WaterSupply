@@ -6,6 +6,9 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <climits>
+#include "SpecialLocation.h"
+
 int parsePoPToInt(const std::string& str) {
     std::string cleanedStr = str;
 
@@ -21,6 +24,13 @@ int parsePoPToInt(const std::string& str) {
     // Convert to integer
     return std::stoi(cleanedStr);
 }
+void SupplyManagement::createSupers() {
+    SpecialLocation source=SpecialLocation(-1, "SOURCE");
+    SpecialLocation sink=SpecialLocation(-1, "SINK");
+    network.addVertex(source);
+    network.addVertex(sink);
+}
+
 void SupplyManagement::readCities() {
     cout<<"CITIES"<<endl;
     string city;
@@ -39,6 +49,7 @@ void SupplyManagement::readCities() {
     getline(cityCsv, line); // Ignore header
 
     // Iterate over every line of the file, split the line, create a new class and append that class to the list of classes.
+    auto SuperSink=network.findVertex(Location(-1,"SINK"));
     while (getline(cityCsv, line)) {
         istringstream iss(line);
         getline(iss, city, ',');
@@ -51,6 +62,7 @@ void SupplyManagement::readCities() {
         City city=City(stoi(id),code,city_,stod(demand),parsePoPToInt(population));
 
         network.addVertex(city);
+        network.addDirectedEdgeWithResidual(city,SuperSink->getInfo(),INT_MAX);
     }
 
     cityCsv.close();
@@ -71,6 +83,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
 
     string line;
     getline(reservoirCsv, line); // Ignore header
+    auto SuperSource=network.findVertex(Location(-1,"SOURCE"));
 
     // Iterate over every line of the file, split the line, create a new class and append that class to the list of classes.
     while (getline(reservoirCsv, line)) {
@@ -84,6 +97,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
 
         Reservoir reservoir= Reservoir(stoi(id),code,name,municipality,stod(limit));
         network.addVertex(reservoir);
+        network.addDirectedEdgeWithResidual(SuperSource->getInfo(),reservoir,INT_MAX);
     }
 
     reservoirCsv.close();

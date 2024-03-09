@@ -22,12 +22,13 @@ public:
           stationFile(station_file),
           pipeFile(pipe_file) {
     }
-
+    void createSupers();
     void readCities();
     void readReservoirs();
     void readStations();
     void readPipes();
     void assembleGraph();
+
     private:
     Graph<Location> network;
 public:
