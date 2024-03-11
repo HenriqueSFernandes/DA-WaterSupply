@@ -14,11 +14,14 @@ protected:
 
 public:
     virtual ~Location() {}
-    Location(int id, const std::string& code);
+
+    Location(int id, const std::string &code);
 
     int getId() const;
+
     std::string getCode() const;
-    bool operator==(const Location& other) const {
+
+    bool operator==(const Location &other) const {
         return (code_ == other.code_);
     }
 };

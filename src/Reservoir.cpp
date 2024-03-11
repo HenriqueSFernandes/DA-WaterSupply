@@ -4,11 +4,12 @@
 
 #include "Reservoir.h"
 
-Reservoir::Reservoir(int id, const std::string& code, const std::string& name, const std::string& municipality, double max_delivery):
-    Location(id, code),
-    municipality_(municipality),
-    name_(name),
-    max_delivery_(max_delivery) {}
+Reservoir::Reservoir(int id, const std::string &code, const std::string &name, const std::string &municipality,
+                     double max_delivery) :
+        Location(id, code),
+        municipality_(municipality),
+        name_(name),
+        max_delivery_(max_delivery) {}
 
 std::string Reservoir::getName() const {
     return name_;

@@ -7,14 +7,14 @@
 
 #include "Location.h"
 
-class City: public Location {
+class City : public Location {
 private:
     std::string name_;
     double demand_;
     int population_;
 
 public:
-    City(int id, const std::string& code, const std::string& name, double demand, int population);
+    City(int id, const std::string &code, const std::string &name, double demand, int population);
 
     std::string getName() const;
 

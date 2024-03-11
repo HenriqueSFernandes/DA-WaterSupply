@@ -9,7 +9,7 @@
 
 class Station : public Location {
 public:
-    Station(int id, const std::string& code);
+    Station(int id, const std::string &code);
 };
 
 #endif //STATION_H

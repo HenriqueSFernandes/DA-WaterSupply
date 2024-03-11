@@ -4,7 +4,7 @@
 
 #include "Location.h"
 
-Location::Location(int id, const std::string& code): id_(id), code_(code) {}
+Location::Location(int id, const std::string &code) : id_(id), code_(code) {}
 
 int Location::getId() const {
     return id_;

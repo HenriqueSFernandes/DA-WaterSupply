@@ -4,5 +4,5 @@
 
 #include "Station.h"
 
-Station::Station(int id, const std::string& code) : Location(id, code) {}
+Station::Station(int id, const std::string &code) : Location(id, code) {}
 

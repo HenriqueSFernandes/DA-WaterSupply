@@ -9,7 +9,7 @@
 #include <climits>
 #include "SpecialLocation.h"
 
-int parsePoPToInt(const std::string& str) {
+int parsePoPToInt(const std::string &str) {
     std::string cleanedStr = str;
 
     // Remove leading and trailing quotes
@@ -24,15 +24,16 @@ int parsePoPToInt(const std::string& str) {
     // Convert to integer
     return std::stoi(cleanedStr);
 }
+
 void SupplyManagement::createSupers() {
-    SpecialLocation source=SpecialLocation(-1, "SOURCE");
-    SpecialLocation sink=SpecialLocation(-1, "SINK");
+    SpecialLocation source = SpecialLocation(-1, "SOURCE");
+    SpecialLocation sink = SpecialLocation(-1, "SINK");
     network.addVertex(source);
     network.addVertex(sink);
 }
 
 void SupplyManagement::readCities() {
-    cout<<"CITIES"<<endl;
+    cout << "CITIES" << endl;
     string city;
     string id;
     string code;
@@ -49,7 +50,7 @@ void SupplyManagement::readCities() {
     getline(cityCsv, line); // Ignore header
 
     // Iterate over every line of the file, split the line, create a new class and append that class to the list of classes.
-    auto SuperSink=network.findVertex(Location(-1,"SINK"));
+    auto SuperSink = network.findVertex(Location(-1, "SINK"));
     while (getline(cityCsv, line)) {
         istringstream iss(line);
         getline(iss, city, ',');
@@ -57,18 +58,19 @@ void SupplyManagement::readCities() {
         getline(iss, code, ',');
         getline(iss, demand, ',');
         getline(iss, population, '\r');
-        cout<<" READ"<<city<<"/"<<id<<"/"<<code<<"/"<<demand<<"/"<<population<<endl;
-        const string city_=city; //just a quick fix
-        City city=City(stoi(id),code,city_,stod(demand),parsePoPToInt(population));
+        cout << " READ" << city << "/" << id << "/" << code << "/" << demand << "/" << population << endl;
+        const string city_ = city; //just a quick fix
+        City city = City(stoi(id), code, city_, stod(demand), parsePoPToInt(population));
 
         network.addVertex(city);
-        network.addDirectedEdgeWithResidual(city,SuperSink->getInfo(),INT_MAX);
+        network.addDirectedEdgeWithResidual(city, SuperSink->getInfo(), INT_MAX);
     }
 
     cityCsv.close();
 }
+
 void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maximum Delivery (m3/sec),,
-    cout<<"RESERVOIRS"<<endl;
+    cout << "RESERVOIRS" << endl;
     string name;
     string municipality;
     string id;
@@ -83,7 +85,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
 
     string line;
     getline(reservoirCsv, line); // Ignore header
-    auto SuperSource=network.findVertex(Location(-1,"SOURCE"));
+    auto SuperSource = network.findVertex(Location(-1, "SOURCE"));
 
     // Iterate over every line of the file, split the line, create a new class and append that class to the list of classes.
     while (getline(reservoirCsv, line)) {
@@ -93,17 +95,18 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
         getline(iss, id, ',');
         getline(iss, code, ',');
         getline(iss, limit, ',');
-        cout<<" READ "<<name<<"/"<<municipality<<"/"<<id<<"/"<<code<<"/"<<limit<<endl;
+        cout << " READ " << name << "/" << municipality << "/" << id << "/" << code << "/" << limit << endl;
 
-        Reservoir reservoir= Reservoir(stoi(id),code,name,municipality,stod(limit));
+        Reservoir reservoir = Reservoir(stoi(id), code, name, municipality, stod(limit));
         network.addVertex(reservoir);
-        network.addDirectedEdgeWithResidual(SuperSource->getInfo(),reservoir,stod(limit));
+        network.addDirectedEdgeWithResidual(SuperSource->getInfo(), reservoir, stod(limit));
     }
 
     reservoirCsv.close();
 }
+
 void SupplyManagement::readStations() { //Id,Code,,
-    cout<<"STATIONS"<<endl;
+    cout << "STATIONS" << endl;
     string id;
     string code;
     ifstream stationCsv(stationFile);
@@ -121,9 +124,9 @@ void SupplyManagement::readStations() { //Id,Code,,
         istringstream iss(line);
         getline(iss, id, ',');
         getline(iss, code, ',');
-        cout<<" READ "<<id<<"/"<<code<<endl;
-        if(code=="") break;
-        Station station(stoi(id),code);
+        cout << " READ " << id << "/" << code << endl;
+        if (code == "") break;
+        Station station(stoi(id), code);
         network.addVertex(station);
     }
 
@@ -132,7 +135,7 @@ void SupplyManagement::readStations() { //Id,Code,,
 
 
 void SupplyManagement::readPipes() { //Service_Point_A,Service_Point_B,Capacity,Direction
-    cout<<"PIPES"<<endl;
+    cout << "PIPES" << endl;
     string codeA;
     string codeB;
     string capacity;
@@ -154,15 +157,15 @@ void SupplyManagement::readPipes() { //Service_Point_A,Service_Point_B,Capacity,
         getline(iss, codeB, ',');
         getline(iss, capacity, ',');
         getline(iss, directed, '\r');
-        cout<<" READ "<<codeA<<"/"<<codeB<<"/"<<capacity<<"/"<<directed<<endl;
-        double cap=stod(capacity);
-        auto source=network.findVertex(Location(0,codeA));
-        auto dest=network.findVertex(Location(0,codeB));
-        if(directed=="0") {
+        cout << " READ " << codeA << "/" << codeB << "/" << capacity << "/" << directed << endl;
+        double cap = stod(capacity);
+        auto source = network.findVertex(Location(0, codeA));
+        auto dest = network.findVertex(Location(0, codeB));
+        if (directed == "0") {
 
-            network.addBidirectionalEdge(source->getInfo(),dest->getInfo(),cap);
-        }else {
-            network.addDirectedEdgeWithResidual(source->getInfo(),dest->getInfo(),cap);
+            network.addBidirectionalEdge(source->getInfo(), dest->getInfo(), cap);
+        } else {
+            network.addDirectedEdgeWithResidual(source->getInfo(), dest->getInfo(), cap);
         }
 
     }
@@ -177,28 +180,31 @@ const Graph<Location> &SupplyManagement::getNetwork() const {
 void SupplyManagement::setNetwork(const Graph<Location> &network) {
     SupplyManagement::network = network;
 }
+
 void setUnvisited(Graph<Location> *g) {
-    for( auto el : g->getVertexSet()) {
+    for (auto el: g->getVertexSet()) {
         el->setVisited(false);
 
     }
 }
+
 void initiateGraphFlow(Graph<Location> *g) {
-    for( auto el : g->getVertexSet()) {
-        for( auto edge : el->getAdj()) {
+    for (auto el: g->getVertexSet()) {
+        for (auto edge: el->getAdj()) {
             edge->setFlow(0);
         }
     }
 }
-int SupplyManagement::edmondsKarp( Location source, Location target) {
+
+int SupplyManagement::edmondsKarp(Location source, Location target) {
     // O algorithmo de edmond karp uso bfs
-    int curflow=-1;
-    int res=0;
+    int curflow = -1;
+    int res = 0;
     initiateGraphFlow(&network);
-    while(curflow!=0) {
+    while (curflow != 0) {
         setUnvisited(&network);
-        curflow=bfsEdmond(source, target);
-        res+=curflow;
+        curflow = bfsEdmond(source, target);
+        res += curflow;
     }
     return res;
 }
@@ -206,34 +212,35 @@ int SupplyManagement::edmondsKarp( Location source, Location target) {
 int SupplyManagement::bfsEdmond(Location source, Location target) {
 
     queue<Vertex<Location> *> myQueue;
-    auto sourceVertex= network.findVertex(source);
+    auto sourceVertex = network.findVertex(source);
     sourceVertex->setVisited(true);
     myQueue.push(sourceVertex);
-    while(!myQueue.empty()) {
-        auto cur=myQueue.front();
+    while (!myQueue.empty()) {
+        auto cur = myQueue.front();
         myQueue.pop();
-        if(cur->getInfo()==target) {
-            if(cur->getPath()==NULL) return 0;
+        if (cur->getInfo() == target) {
+            if (cur->getPath() == NULL) return 0;
             else {
-                int bottleNeck=cur->getPath()->getCapacity();
-                auto edge=cur->getPath();
-                while(edge != NULL) {
-                    bottleNeck=min((int)(edge->getCapacity()-edge->getFlow()),bottleNeck);
-                    edge=edge->getOrig()->getPath();
+                int bottleNeck = cur->getPath()->getCapacity();
+                auto edge = cur->getPath();
+                while (edge != NULL) {
+                    bottleNeck = min((int) (edge->getCapacity() - edge->getFlow()), bottleNeck);
+                    edge = edge->getOrig()->getPath();
                 }
-                int res=bottleNeck;
-                edge=cur->getPath();
-                while((edge != NULL)) {
-                    edge->setFlow(edge->getFlow()+bottleNeck);
-                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity()+bottleNeck);
-                    edge=edge->getOrig()->getPath();
+                int res = bottleNeck;
+                edge = cur->getPath();
+                while ((edge != NULL)) {
+                    edge->setFlow(edge->getFlow() + bottleNeck);
+                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity() + bottleNeck);
+                    edge = edge->getOrig()->getPath();
                 }
 
                 return res;
             }
         }
-        for( auto edge : cur->getAdj()) {
-            if(edge->getCapacity()-edge->getFlow()>0 && !edge->getDest()->isVisited())  { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+        for (auto edge: cur->getAdj()) {
+            if (edge->getCapacity() - edge->getFlow() > 0 &&
+                !edge->getDest()->isVisited()) { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
                 edge->getDest()->setVisited(true);
                 edge->getDest()->setPath(edge);
                 myQueue.push(edge->getDest());

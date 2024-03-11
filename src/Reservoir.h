@@ -15,7 +15,8 @@ private:
     double max_delivery_;
 
 public:
-    Reservoir(int id, const std::string& code, const std::string& name, const std::string& municipality, double max_delivery);
+    Reservoir(int id, const std::string &code, const std::string &name, const std::string &municipality,
+              double max_delivery);
 
     std::string getName() const;
 
