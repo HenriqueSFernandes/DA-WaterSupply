@@ -25,6 +25,8 @@ public:
               pipeFile(pipe_file) {
     }
 
+    virtual ~SupplyManagement();
+
     void createSupers();
 
     void readCities();
@@ -41,14 +43,12 @@ public:
 
     int bfsEdmond(Location source, Location target);
 
-private:
-    Graph<Location> network;
-public:
-    const Graph<Location> &getNetwork() const;
+    const Graph<Location *> &getNetwork() const;
 
-    void setNetwork(const Graph<Location> &network);
+    void setNetwork(const Graph<Location *> &network);
 
 private:
+    Graph<Location *> network;
     string cityFile;
     string reservoirFile;
     string stationFile;

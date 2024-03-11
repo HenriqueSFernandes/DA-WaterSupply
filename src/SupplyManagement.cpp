@@ -26,10 +26,10 @@ int parsePoPToInt(const std::string &str) {
 }
 
 void SupplyManagement::createSupers() {
-    SpecialLocation source = SpecialLocation(-1, "SOURCE");
-    SpecialLocation sink = SpecialLocation(-1, "SINK");
-    network.addVertex(source);
-    network.addVertex(sink);
+    auto *sourcePtr = new SpecialLocation(-1, "SOURCE");
+    auto *sinkPtr = new SpecialLocation(-1, "SINK");
+    network.addVertex(sourcePtr);
+    network.addVertex(sinkPtr);
 }
 
 void SupplyManagement::readCities() {
@@ -50,7 +50,8 @@ void SupplyManagement::readCities() {
     getline(cityCsv, line); // Ignore header
 
     // Iterate over every line of the file, split the line, create a new class and append that class to the list of classes.
-    auto SuperSink = network.findVertex(Location(-1, "SINK"));
+    Location sink = Location(-1, "SINK");
+    Vertex<Location *> *SuperSink = network.findVertex(&sink);
     while (getline(cityCsv, line)) {
         istringstream iss(line);
         getline(iss, city, ',');
@@ -60,7 +61,7 @@ void SupplyManagement::readCities() {
         getline(iss, population, '\r');
         cout << " READ" << city << "/" << id << "/" << code << "/" << demand << "/" << population << endl;
         const string city_ = city; //just a quick fix
-        City city = City(stoi(id), code, city_, stod(demand), parsePoPToInt(population));
+        City *city = new City(stoi(id), code, city_, stod(demand), parsePoPToInt(population));
 
         network.addVertex(city);
         network.addDirectedEdgeWithResidual(city, SuperSink->getInfo(), INT_MAX);
@@ -85,7 +86,8 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
 
     string line;
     getline(reservoirCsv, line); // Ignore header
-    auto SuperSource = network.findVertex(Location(-1, "SOURCE"));
+    Location source = Location(-1, "SOURCE");
+    Vertex<Location *> *SuperSource = network.findVertex(&source);
 
     // Iterate over every line of the file, split the line, create a new class and append that class to the list of classes.
     while (getline(reservoirCsv, line)) {
@@ -97,7 +99,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
         getline(iss, limit, ',');
         cout << " READ " << name << "/" << municipality << "/" << id << "/" << code << "/" << limit << endl;
 
-        Reservoir reservoir = Reservoir(stoi(id), code, name, municipality, stod(limit));
+        Reservoir *reservoir = new Reservoir(stoi(id), code, name, municipality, stod(limit));
         network.addVertex(reservoir);
         network.addDirectedEdgeWithResidual(SuperSource->getInfo(), reservoir, stod(limit));
     }
@@ -126,7 +128,7 @@ void SupplyManagement::readStations() { //Id,Code,,
         getline(iss, code, ',');
         cout << " READ " << id << "/" << code << endl;
         if (code == "") break;
-        Station station(stoi(id), code);
+        Station* station = new Station(stoi(id), code);
         network.addVertex(station);
     }
 
@@ -159,36 +161,35 @@ void SupplyManagement::readPipes() { //Service_Point_A,Service_Point_B,Capacity,
         getline(iss, directed, '\r');
         cout << " READ " << codeA << "/" << codeB << "/" << capacity << "/" << directed << endl;
         double cap = stod(capacity);
-        auto source = network.findVertex(Location(0, codeA));
-        auto dest = network.findVertex(Location(0, codeB));
+        Location sourceSearcher = Location(0, codeA);
+        Location destSearcher = Location(0, codeB);
+        auto source = network.findVertex(&sourceSearcher);
+        auto dest = network.findVertex(&destSearcher);
         if (directed == "0") {
-
             network.addBidirectionalEdge(source->getInfo(), dest->getInfo(), cap);
         } else {
             network.addDirectedEdgeWithResidual(source->getInfo(), dest->getInfo(), cap);
         }
-
     }
 
     pipeCsv.close();
 }
 
-const Graph<Location> &SupplyManagement::getNetwork() const {
+const Graph<Location *> &SupplyManagement::getNetwork() const {
     return network;
 }
 
-void SupplyManagement::setNetwork(const Graph<Location> &network) {
+void SupplyManagement::setNetwork(const Graph<Location *> &network) {
     SupplyManagement::network = network;
 }
 
-void setUnvisited(Graph<Location> *g) {
+void setUnvisited(Graph<Location *> *g) {
     for (auto el: g->getVertexSet()) {
         el->setVisited(false);
-
     }
 }
 
-void initiateGraphFlow(Graph<Location> *g) {
+void initiateGraphFlow(Graph<Location *> *g) {
     for (auto el: g->getVertexSet()) {
         for (auto edge: el->getAdj()) {
             edge->setFlow(0);
@@ -211,14 +212,14 @@ int SupplyManagement::edmondsKarp(Location source, Location target) {
 
 int SupplyManagement::bfsEdmond(Location source, Location target) {
 
-    queue<Vertex<Location> *> myQueue;
-    auto sourceVertex = network.findVertex(source);
+    queue<Vertex<Location *> *> myQueue;
+    auto sourceVertex = network.findVertex(&source);
     sourceVertex->setVisited(true);
     myQueue.push(sourceVertex);
     while (!myQueue.empty()) {
         auto cur = myQueue.front();
         myQueue.pop();
-        if (cur->getInfo() == target) {
+        if (*(cur->getInfo()) == target) {
             if (cur->getPath() == NULL) return 0;
             else {
                 int bottleNeck = cur->getPath()->getCapacity();
@@ -250,5 +251,20 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
     }
 
     return 0;
+}
+
+SupplyManagement::~SupplyManagement() {
+    cout << "!!!Starting edge deletion\n";
+    for (Vertex<Location *> *vertex: network.getVertexSet()) {
+        for (auto edge : vertex->getAdj()){
+            delete edge->getDest();
+        }
+    }
+    cout << "!!!Starting vertex deletion\n";
+
+    for (Vertex<Location*>* vertex: network.getVertexSet()){
+        delete vertex;
+    }
+    cout << "!!!Deletion done\n";
 }
 
