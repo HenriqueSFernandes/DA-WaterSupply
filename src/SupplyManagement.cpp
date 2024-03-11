@@ -128,7 +128,7 @@ void SupplyManagement::readStations() { //Id,Code,,
         getline(iss, code, ',');
         cout << " READ " << id << "/" << code << endl;
         if (code == "") break;
-        Station* station = new Station(stoi(id), code);
+        Station *station = new Station(stoi(id), code);
         network.addVertex(station);
     }
 
@@ -254,17 +254,15 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
 }
 
 SupplyManagement::~SupplyManagement() {
-    cout << "!!!Starting edge deletion\n";
     for (Vertex<Location *> *vertex: network.getVertexSet()) {
-        for (auto edge : vertex->getAdj()){
-            delete edge->getDest();
+        // Delete all outgoing edges from the vertex
+        for (Edge<Location *> *edge: vertex->getAdj()) {
+            delete edge;
         }
-    }
-    cout << "!!!Starting vertex deletion\n";
-
-    for (Vertex<Location*>* vertex: network.getVertexSet()){
+        // Delete the Location object associated with the vertex
+        delete vertex->getInfo();
+        // Delete the vertex itself
         delete vertex;
     }
-    cout << "!!!Deletion done\n";
 }
 
