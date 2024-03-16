@@ -25,8 +25,8 @@ int parsePoPToInt(const std::string& str) {
     return std::stoi(cleanedStr);
 }
 void SupplyManagement::createSupers() {
-    SpecialLocation source=SpecialLocation(-1, "SOURCE");
-    SpecialLocation sink=SpecialLocation(-1, "SINK");
+    Location source=Location(-1, "SOURCE");
+    Location sink=Location(-2, "SINK");
     network.addVertex(source);
     network.addVertex(sink);
 }
@@ -59,8 +59,10 @@ void SupplyManagement::readCities() {
         getline(iss, population, '\r');
         cout<<" READ"<<city<<"/"<<id<<"/"<<code<<"/"<<demand<<"/"<<population<<endl;
         const string city_=city; //just a quick fix
-        City city=City(stoi(id),code,city_,stod(demand),parsePoPToInt(population));
-
+        Location city=Location(stoi(id),code);
+        city.setDemand(stod(demand));
+        city.setMunicipality(city_);
+        city.setPopulation(parsePoPToInt(population));
         network.addVertex(city);
         network.addDirectedEdgeWithResidual(city,SuperSink->getInfo(),INT_MAX);
     }
@@ -95,7 +97,10 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
         getline(iss, limit, ',');
         cout<<" READ "<<name<<"/"<<municipality<<"/"<<id<<"/"<<code<<"/"<<limit<<endl;
 
-        Reservoir reservoir= Reservoir(stoi(id),code,name,municipality,stod(limit));
+        Location reservoir= Location(stoi(id),code);
+        reservoir.setMunicipality(municipality);
+        reservoir.setReservoirName(name);
+        reservoir.setMaxDelivery(stod(limit));
         network.addVertex(reservoir);
         network.addDirectedEdgeWithResidual(SuperSource->getInfo(),reservoir,stod(limit));
     }
@@ -123,7 +128,7 @@ void SupplyManagement::readStations() { //Id,Code,,
         getline(iss, code, ',');
         cout<<" READ "<<id<<"/"<<code<<endl;
         if(code=="") break;
-        Station station(stoi(id),code);
+        Location station(stoi(id),code);
         network.addVertex(station);
     }
 
