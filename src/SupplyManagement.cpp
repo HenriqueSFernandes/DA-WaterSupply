@@ -7,7 +7,6 @@
 #include <sstream>
 #include <iomanip>
 #include <climits>
-#include "SpecialLocation.h"
 
 int parsePoPToInt(const std::string& str) {
     std::string cleanedStr = str;
@@ -60,6 +59,7 @@ void SupplyManagement::readCities() {
         cout<<" READ"<<city<<"/"<<id<<"/"<<code<<"/"<<demand<<"/"<<population<<endl;
         const string city_=city; //just a quick fix
         Location city=Location(stoi(id),code);
+        city.setType("C");
         city.setDemand(stod(demand));
         city.setMunicipality(city_);
         city.setPopulation(parsePoPToInt(population));
@@ -98,6 +98,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
         cout<<" READ "<<name<<"/"<<municipality<<"/"<<id<<"/"<<code<<"/"<<limit<<endl;
 
         Location reservoir= Location(stoi(id),code);
+        reservoir.setType("R");
         reservoir.setMunicipality(municipality);
         reservoir.setReservoirName(name);
         reservoir.setMaxDelivery(stod(limit));
@@ -129,6 +130,7 @@ void SupplyManagement::readStations() { //Id,Code,,
         cout<<" READ "<<id<<"/"<<code<<endl;
         if(code=="") break;
         Location station(stoi(id),code);
+        station.setType("PS");
         network.addVertex(station);
     }
 
