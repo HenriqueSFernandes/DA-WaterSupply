@@ -94,7 +94,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
         getline(iss, municipality, ',');
         getline(iss, id, ',');
         getline(iss, code, ',');
-        getline(iss, limit, ',');
+        getline(iss, limit, '\r');
         cout<<" READ "<<name<<"/"<<municipality<<"/"<<id<<"/"<<code<<"/"<<limit<<endl;
 
         Location reservoir= Location(stoi(id),code);
@@ -126,7 +126,7 @@ void SupplyManagement::readStations() { //Id,Code,,
     while (getline(stationCsv, line)) {
         istringstream iss(line);
         getline(iss, id, ',');
-        getline(iss, code, ',');
+        getline(iss, code, '\r');
         cout<<" READ "<<id<<"/"<<code<<endl;
         if(code=="") break;
         Location station(stoi(id),code);
@@ -240,7 +240,8 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
             }
         }
         for( auto edge : cur->getAdj()) {
-            if(edge->getCapacity()-edge->getFlow()>0 && !edge->getDest()->isVisited())  { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+            if(edge->getCapacity()-edge->getFlow()>0 && !edge->getDest()->isVisited() && edge->getDest()->isProcessing())  { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+
                 edge->getDest()->setVisited(true);
                 edge->getDest()->setPath(edge);
                 myQueue.push(edge->getDest());
@@ -251,4 +252,21 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
 
     return 0;
 }
+int SupplyManagement::FlowToCity( Location target){
+    for( auto location : network.getVertexSet()){
+        if(location->getInfo().getType()=="C" && location->getInfo().getCode()!=target.getCode()){
+            location->setProcesssing(false);
+        }else{
+            location->setProcesssing(true);
+        }
+    }
+     return edmondsKarp(Location(-1,"SOURCE"), Location(-1,"SINK"));
 
+}
+void SupplyManagement::resetNetwork(){
+    for( auto loc : network.getVertexSet()){loc->setProcesssing(true); loc->setVisited(false);
+        for( auto edge : loc->getAdj()){
+            edge->setFlow(0);
+        }
+    }
+}

@@ -27,6 +27,8 @@ public:
     void assembleGraph();
     int edmondsKarp( Location source, Location target);
     int bfsEdmond(Location source, Location target);
+    int FlowToCity(Location target);
+    void resetNetwork();
 
     private:
     Graph<Location> network;
