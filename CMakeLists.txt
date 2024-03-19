@@ -1,15 +1,16 @@
 cmake_minimum_required(VERSION 3.26)
-project(DA_WaterSupply)
+project(water-supply)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
-add_executable(DA_WaterSupply main.cpp
+add_executable(water-supply main.cpp
+        src/SupplyManagement.cpp
+        src/SupplyManagement.h
+        src/Graph.cpp
+        src/Graph.h
         src/Location.cpp
-        src/City.cpp
-        src/Reservoir.h
-        src/Reservoir.cpp
-        src/Station.h
-        src/Station.cpp)
+        src/Location.h
+)
 
 # first we can indicate the documentation build as an option and set it to ON by default
 option(BUILD_DOC "Build documentation" ON)
