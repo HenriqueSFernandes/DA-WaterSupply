@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(water-supply main.cpp
         src/SupplyManagement.cpp
         src/SupplyManagement.h
-        src/Graph.cpp
         src/Graph.h
         src/Location.cpp
         src/Location.h
