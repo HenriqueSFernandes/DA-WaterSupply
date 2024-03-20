@@ -41,14 +41,12 @@ public:
 
     void resetNetwork();
 
-private:
-    Graph<Location> network;
-public:
     const Graph<Location> &getNetwork() const;
 
     void setNetwork(const Graph<Location> &network);
 
 private:
+    Graph<Location> network;
     string cityFile;
     string reservoirFile;
     string stationFile;
