@@ -9,57 +9,50 @@
 
 class Location {
 public:
-    int getId() const;
+    [[nodiscard]] int getId() const;
 
     void setId(int id);
 
-    const std::string &getCode() const;
+    [[nodiscard]] const std::string &getCode() const;
 
     void setCode(const std::string &code);
 
-    const std::string &getType() const;
+    [[nodiscard]] const std::string &getType() const;
 
     void setType(const std::string &type);
 
-    const std::string &getReservoirName() const;
+    [[nodiscard]] const std::string &getReservoirName() const;
 
     void setReservoirName(const std::string &reservoirName);
 
-    double getDemand() const;
+    [[nodiscard]] double getDemand() const;
 
-    void setDemand(double demand);
+    void setDemand(double newDemand);
 
-    int getPopulation() const;
+    [[nodiscard]] int getPopulation() const;
 
-    void setPopulation(int population);
+    void setPopulation(int newPopulation);
 
-    int getMaxDelivery() const;
+    [[nodiscard]] int getMaxDelivery() const;
 
     void setMaxDelivery(int maxDelivery);
 
+    Location(int id, std::string code);
 
-private:
-    int id_;
-public:
-    Location(int id, const std::string &code);
-
-private:
-public:
     bool operator==(const Location &rhs) const;
 
     bool operator!=(const Location &rhs) const;
 
-private:
-    std::string code_;
-    std::string type_;
-    std::string reservoir_name;
-    std::string municipality;
-public:
-    const std::string &getMunicipality() const;
+    [[nodiscard]] const std::string &getMunicipality() const;
 
     void setMunicipality(const std::string &municipality);
 
 private:
+    int id_;
+    std::string code_;
+    std::string type_;
+    std::string reservoir_name;
+    std::string municipality;
     int maxDelivery;
     double demand;
     int population;

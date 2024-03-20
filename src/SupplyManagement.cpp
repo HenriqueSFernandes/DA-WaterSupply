@@ -281,3 +281,8 @@ void SupplyManagement::resetNetwork() {
         }
     }
 }
+
+bool SupplyManagement::checkWaterAvailability() {
+    edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+
+}
