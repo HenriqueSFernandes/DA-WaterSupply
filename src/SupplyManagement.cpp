@@ -282,7 +282,18 @@ void SupplyManagement::resetNetwork() {
     }
 }
 
-bool SupplyManagement::checkWaterAvailability() {
+vector<Location> SupplyManagement::checkWaterAvailability() {
+    resetNetwork();
     edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-
+    vector<Location> citiesWithMoreDemandThanFlow;
+    for (Vertex<Location> *location: network.getVertexSet()) {
+        if (location->getInfo().getType() == "C") {
+            if (location->getInfo().getDemand() > location->getAdj()[0]->getFlow()) {
+                citiesWithMoreDemandThanFlow.push_back(location->getInfo());
+                cout << location->getInfo().getMunicipality() << " has a flow of " << location->getAdj()[0]->getFlow()
+                     << " and a demand of " << location->getInfo().getDemand() << endl;
+            }
+        }
+    }
+    return citiesWithMoreDemandThanFlow;
 }

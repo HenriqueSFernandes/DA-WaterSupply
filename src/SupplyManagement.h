@@ -42,7 +42,7 @@ public:
 
     void resetNetwork();
 
-    bool checkWaterAvailability();
+    vector<Location> checkWaterAvailability();
 
     const Graph<Location> &getNetwork() const;
 
