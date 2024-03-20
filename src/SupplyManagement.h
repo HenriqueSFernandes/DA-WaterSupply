@@ -4,6 +4,7 @@
 
 #ifndef SUPPLYMANAGEMENT_H
 #define SUPPLYMANAGEMENT_H
+
 #include "Graph.h"
 #include "Location.h"
 
@@ -13,24 +14,34 @@ using namespace std;
 class SupplyManagement {
 public:
     SupplyManagement(const string &city_file, const string &reservoir_file, const string &station_file,
-        const string &pipe_file)
-        : cityFile(city_file),
-          reservoirFile(reservoir_file),
-          stationFile(station_file),
-          pipeFile(pipe_file) {
+                     const string &pipe_file)
+            : cityFile(city_file),
+              reservoirFile(reservoir_file),
+              stationFile(station_file),
+              pipeFile(pipe_file) {
     }
+
     void createSupers();
+
     void readCities();
+
     void readReservoirs();
+
     void readStations();
+
     void readPipes();
+
     void assembleGraph();
-    int edmondsKarp( Location source, Location target);
+
+    int edmondsKarp(Location source, Location target);
+
     int bfsEdmond(Location source, Location target);
+
     int FlowToCity(Location target);
+
     void resetNetwork();
 
-    private:
+private:
     Graph<Location> network;
 public:
     const Graph<Location> &getNetwork() const;
@@ -44,7 +55,6 @@ private:
     string pipeFile;
 
 };
-
 
 
 #endif //SUPPLYMANAGEMENT_H
