@@ -1,7 +1,5 @@
-//
-// Created by jose on 3/3/24.
-//
 #include "src/SupplyManagement.h"
+#include "src/Menu.h"
 #include <sstream>
 #include <iostream>
 
@@ -9,12 +7,17 @@ int main() {
     cout << "here" << endl;
     SupplyManagement managerTester = SupplyManagement("../data/Cities.csv", "../data/Reservoir.csv",
                                                       "../data/Stations.csv", "../data/Pipes.csv");
-    //MAYBE CALL OF THESE IN ONE SINGLE FUNCTION
     managerTester.createSupers();
     managerTester.readCities();
     managerTester.readReservoirs();
     managerTester.readStations();
     managerTester.readPipes();
+
+    Menu menu(managerTester);
+    menu.start();
+
+    //********************* CODE FOR TESTING *****************************
+    /*
     for (auto vertex: managerTester.getNetwork().getVertexSet()) {
         cout << " VERTEX " << vertex->getInfo().getCode() << endl;
         for (auto edge: vertex->getAdj()) {
@@ -38,6 +41,8 @@ int main() {
 
     managerTester.resetNetwork();
     cout << "pah covilha" << managerTester.FlowToCity(Location(8, "C_8")) << endl;
+    */
+
 
 
     return 0;

@@ -9,6 +9,8 @@ add_executable(water-supply main.cpp
         src/Graph.h
         src/Location.cpp
         src/Location.h
+        src/Menu.cpp
+        src/Menu.h
 )
 
 # first we can indicate the documentation build as an option and set it to ON by default
