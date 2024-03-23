@@ -49,6 +49,8 @@ public:
 
     bool operator!=(const Location &rhs) const;
 
+    bool operator<(const Location &rhs) const;
+
 private:
     std::string code_;
     std::string type_;

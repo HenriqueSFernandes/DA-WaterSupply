@@ -122,3 +122,6 @@ void Location::setMunicipality(const std::string &municipality) {
         throw std::runtime_error("THIS LOCATION HAS NO MUNICIPALITY VALUE");
     }
 }
+bool Location::operator<(const Location &rhs) const {
+    return code_ < rhs.code_;
+}
