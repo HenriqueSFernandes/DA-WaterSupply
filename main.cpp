@@ -15,21 +15,6 @@ int main() {
     managerTester.readReservoirs();
     managerTester.readStations();
     managerTester.readPipes();
-    cout<<"TESTING 3-2"<<endl;
-    set<Location> myset;
-    myset.insert(Location(10,"PS_10"));
-    myset.insert(Location(11,"PS_11"));
-    myset.insert(Location(12,"PS_12"));
-    myset.insert(Location(81,"PS_81"));
-    std::stringstream ss;
-   managerTester.pumpingFlow(myset);
-    for (auto v: managerTester.getNetwork().getVertexSet()) {
-        ss << v->getInfo().getCode() << "-> (";
-        for (const auto e: v->getAdj())
-            ss << (e->getDest())->getInfo().getCode() << "[Flow: " << e->getFlow() << "] ";
-        ss << ") || ";
-    }
-    std::cout << ss.str() << std::endl << std::endl;
-    cout<<"FINISH"<<endl;
+    managerTester.checkWaterAvailability();
     return 0;
 }

@@ -281,7 +281,7 @@ void SupplyManagement::resetNetwork() {
             edge->setFlow(0);
         }
     }
-}
+
 void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
     for (auto ver : network.getVertexSet()) {
         if (PumpingStations.find(ver->getInfo()) != PumpingStations.end()) {
@@ -326,4 +326,21 @@ int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
 
 
     return res;
+}
+
+vector<Location> SupplyManagement::checkWaterAvailability() {
+    resetNetwork();
+    edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    vector<Location> citiesWithMoreDemandThanFlow;
+    for (Vertex<Location> *location: network.getVertexSet()) {
+        if (location->getInfo().getType() == "C") {
+            if (location->getInfo().getDemand() > location->getAdj()[0]->getFlow()) {
+                citiesWithMoreDemandThanFlow.push_back(location->getInfo());
+                cout << location->getInfo().getMunicipality() << " has a flow of " << location->getAdj()[0]->getFlow()
+                     << " and a demand of " << location->getInfo().getDemand() << endl;
+            }
+        }
+    }
+    return citiesWithMoreDemandThanFlow;
+
 }
