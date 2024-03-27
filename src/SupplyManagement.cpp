@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iomanip>
 #include <climits>
+#include <map>
 
 int parsePoPToInt(const std::string &str) {
     std::string cleanedStr = str;
@@ -296,4 +297,52 @@ vector<Location> SupplyManagement::checkWaterAvailability() {
         }
     }
     return citiesWithMoreDemandThanFlow;
+}
+
+void SupplyManagement::removeReservoir(const Location& reservoir) {
+    for (auto ver : network.getVertexSet()) {
+        if (ver->getInfo() == reservoir) {
+            ver->setProcesssing(false);
+        }
+    }
+}
+
+int SupplyManagement::brokenReservoirFlow(const Location& reservoir) {
+    resetNetwork();
+    int prev=edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    map<string,int> cityValue;
+    for (auto v: network.getVertexSet()) {
+        string s;
+        s=v->getInfo().getCode();
+        for (auto e: v->getAdj()){
+            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
+                cityValue[s]=e->getFlow();
+            }
+
+        }
+    }
+    resetNetwork();
+    removeReservoir(reservoir);
+    int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    for (auto v: network.getVertexSet()) {
+        string city;
+        city=v->getInfo().getCode();
+        for (auto e: v->getAdj()){
+            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
+                if(cityValue[city]>e->getFlow()) {
+                    if(v->getInfo().getDemand() <= e->getFlow())
+                        cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<" BUT IT'S STILL "<< e->getFlow() - v->getInfo().getDemand()<<" ABOVE DEMAND"<<endl;
+                    else
+                        cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<" WHICH NOW HAS A DEFICIT OF "<<v->getInfo().getDemand() - e->getFlow()<<endl;
+                }
+
+            };
+        }
+    }
+    int dif=prev-res;
+    cout<<"TOTAL "<<res<<" DIFFERENCE "<<dif<<endl;
+
+
+
+    return res;
 }

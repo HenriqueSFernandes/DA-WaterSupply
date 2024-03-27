@@ -44,6 +44,10 @@ public:
 
     vector<Location> checkWaterAvailability();
 
+    void removeReservoir(const Location& reservoir);
+
+    int brokenReservoirFlow(const Location& reservoir);
+
     const Graph<Location> &getNetwork() const;
 
     void setNetwork(const Graph<Location> &network);
