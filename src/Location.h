@@ -43,9 +43,12 @@ public:
 
     bool operator!=(const Location &rhs) const;
 
+    bool operator<(const Location &rhs) const;
+
     [[nodiscard]] const std::string &getMunicipality() const;
 
     void setMunicipality(const std::string &municipality);
+
 
 private:
     int id_;

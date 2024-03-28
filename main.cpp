@@ -15,7 +15,6 @@ int main() {
     managerTester.readReservoirs();
     managerTester.readStations();
     managerTester.readPipes();
-
     managerTester.checkWaterAvailability();
     return 0;
 }

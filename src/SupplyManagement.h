@@ -8,6 +8,7 @@
 #include <utility>
 #include "Graph.h"
 #include "Location.h"
+#include <set>
 
 using namespace std;
 
@@ -48,6 +49,11 @@ public:
 
     void setNetwork(const Graph<Location> &network);
 
+    void removePumpingStations(set<Location> PumpingStations );
+
+    int pumpingFlow(set<Location> PumpingStations);
+
+    void SingleStationRemoval();
 private:
     Graph<Location> network;
     string cityFile;

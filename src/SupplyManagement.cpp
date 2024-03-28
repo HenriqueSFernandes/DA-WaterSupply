@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iomanip>
 #include <climits>
+#include <map>
 
 int parsePoPToInt(const std::string &str) {
     std::string cleanedStr = str;
@@ -280,6 +281,51 @@ void SupplyManagement::resetNetwork() {
             edge->setFlow(0);
         }
     }
+
+void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
+    for (auto ver : network.getVertexSet()) {
+        if (PumpingStations.find(ver->getInfo()) != PumpingStations.end()) {
+
+            ver->setProcesssing(false);
+        }
+    }
+}
+
+int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
+    resetNetwork();
+    int prev=edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    map<string,int> cityValue;
+    for (auto v: network.getVertexSet()) {
+        string s;
+        s=v->getInfo().getCode();
+        for (auto e: v->getAdj()){
+            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
+                cityValue[s]=e->getFlow();
+            }
+
+        }
+    }
+    resetNetwork();
+    removePumpingStations(PumpingStations);
+    int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    for (auto v: network.getVertexSet()) {
+        string city;
+        city=v->getInfo().getCode();
+        for (auto e: v->getAdj()){
+            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
+                if(cityValue[city]>e->getFlow()){
+                    cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<endl;
+            }
+
+            };
+        }
+    }
+    int dif=prev-res;
+    cout<<"TOTAL "<<res<<" DIFFERENCE "<<dif<<endl;
+
+
+
+    return res;
 }
 
 vector<Location> SupplyManagement::checkWaterAvailability() {
@@ -296,4 +342,5 @@ vector<Location> SupplyManagement::checkWaterAvailability() {
         }
     }
     return citiesWithMoreDemandThanFlow;
+
 }
