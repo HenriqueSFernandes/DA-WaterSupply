@@ -1,5 +1,6 @@
 #include "Location.h"
 #include <stdexcept>
+#include <utility>
 
 int Location::getId() const {
     return id_;
@@ -9,38 +10,36 @@ void Location::setId(int id) {
     id_ = id;
 }
 
-const std::__cxx11::basic_string<char> &Location::getCode() const {
+const std::string &Location::getCode() const {
     return code_;
 }
 
-void Location::setCode(const std::__cxx11::basic_string<char> &code) {
+void Location::setCode(const std::string &code) {
     code_ = code;
 }
 
-const std::__cxx11::basic_string<char> &Location::getType() const {
+const std::string &Location::getType() const {
     return type_;
 }
 
-void Location::setType(const std::__cxx11::basic_string<char> &type) {
+void Location::setType(const std::string &type) {
     type_ = type;
 }
 
-const std::__cxx11::basic_string<char> &Location::getReservoirName() const {
+const std::string &Location::getReservoirName() const {
     if (this->getType() == "R") {
         return reservoir_name;
     } else {
         throw std::runtime_error("YOU TRIED TO GET A RESERVOIR NAME BUT LOCATION IS NOT A RESERVOIR");
     }
-
 }
 
-void Location::setReservoirName(const std::__cxx11::basic_string<char> &reservoirName) {
+void Location::setReservoirName(const std::string &reservoirName) {
     if (this->getType() == "R") {
         reservoir_name = reservoirName;
     } else {
         throw std::runtime_error("YOU TRIED TO SET A RESERVOIR NAME BUT LOCATION IS NOT A RESERVOIR");
     }
-
 }
 
 double Location::getDemand() const {
@@ -49,12 +48,11 @@ double Location::getDemand() const {
     } else {
         throw std::runtime_error("YOU TRIED TO GET CITY DEMAND BUT LOCATION IS NOT A CITY");
     }
-
 }
 
-void Location::setDemand(double demand) {
+void Location::setDemand(double newDemand) {
     if (this->getType() == "C") {
-        Location::demand = demand;
+        demand = newDemand;
     } else {
         throw std::runtime_error("YOU TRIED TO SET CITY DEMAND BUT LOCATION IS NOT A CITY");
     }
@@ -66,16 +64,14 @@ int Location::getPopulation() const {
     } else {
         throw std::runtime_error("YOU TRIED TO GET CITY POPULATION BUT LOCATION IS NOT A CITY");
     }
-
 }
 
-void Location::setPopulation(int population) {
+void Location::setPopulation(int newPopulation) {
     if (this->getType() == "C") {
-        Location::population = population;
+        population = newPopulation;
     } else {
         throw std::runtime_error("YOU TRIED TO SET CITY POPULATION BUT LOCATION IS NOT A CITY");
     }
-
 }
 
 int Location::getMaxDelivery() const {
@@ -84,19 +80,17 @@ int Location::getMaxDelivery() const {
     } else {
         throw std::runtime_error("YOU TRIED TO GET MAXDELIVERY BUT LOCATION IS NOT RESERVOIR");
     }
-
 }
 
-void Location::setMaxDelivery(int maxDelivery) {
+void Location::setMaxDelivery(int newMaxDelivery) {
     if (this->getType() == "R") {
-        Location::maxDelivery = maxDelivery;
+        maxDelivery = newMaxDelivery;
     } else {
         throw std::runtime_error("YOU TRIED TO SET MAXDELIVERY BUT LOCATION IS NOT RESERVOIR");
     }
-
 }
 
-Location::Location(int id, const std::string &code) : id_(id), code_(code) {}
+Location::Location(int id, std::string code) : id_(id), code_(std::move(code)) {}
 
 bool Location::operator==(const Location &rhs) const {
     return code_ == rhs.code_;
@@ -112,13 +106,15 @@ const std::string &Location::getMunicipality() const {
     } else {
         throw std::runtime_error("THIS LOCATION HAS NO MUNICIPALITY VALUE");
     }
-
 }
 
-void Location::setMunicipality(const std::string &municipality) {
+void Location::setMunicipality(const std::string &newMunicipality) {
     if (this->getType() == "R" || this->getType() == "C") {
-        Location::municipality = municipality;
+        municipality = newMunicipality;
     } else {
         throw std::runtime_error("THIS LOCATION HAS NO MUNICIPALITY VALUE");
     }
+}
+bool Location::operator<(const Location &rhs) const {
+    return code_ < rhs.code_;
 }

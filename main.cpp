@@ -12,6 +12,8 @@ int main() {
     managerTester.readReservoirs();
     managerTester.readStations();
     managerTester.readPipes();
+    managerTester.checkWaterAvailability();
+    managerTester.brokenReservoirFlow(Location(11, "R_11"));
 
     Menu menu(managerTester);
     menu.start();

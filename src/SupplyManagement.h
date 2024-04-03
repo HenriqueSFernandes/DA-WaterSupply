@@ -5,20 +5,22 @@
 #ifndef SUPPLYMANAGEMENT_H
 #define SUPPLYMANAGEMENT_H
 
+#include <utility>
 #include "Graph.h"
 #include "Location.h"
+#include <set>
 
 using namespace std;
 
 
 class SupplyManagement {
 public:
-    SupplyManagement(const string &city_file, const string &reservoir_file, const string &station_file,
-                     const string &pipe_file)
-            : cityFile(city_file),
-              reservoirFile(reservoir_file),
-              stationFile(station_file),
-              pipeFile(pipe_file) {
+    SupplyManagement(string city_file, string reservoir_file, string station_file,
+                     string pipe_file)
+            : cityFile(std::move(city_file)),
+              reservoirFile(std::move(reservoir_file)),
+              stationFile(std::move(station_file)),
+              pipeFile(std::move(pipe_file)) {
     }
 
     void createSupers();
@@ -41,10 +43,21 @@ public:
 
     void resetNetwork();
 
+    vector<Location> checkWaterAvailability();
+
+    void removeReservoir(const Location& reservoir);
+
+    int brokenReservoirFlow(const Location& reservoir);
+
     const Graph<Location> &getNetwork() const;
 
     void setNetwork(const Graph<Location> &network);
 
+    void removePumpingStations(set<Location> PumpingStations );
+
+    int pumpingFlow(set<Location> PumpingStations);
+
+    void SingleStationRemoval();
 private:
     Graph<Location> network;
     string cityFile;
