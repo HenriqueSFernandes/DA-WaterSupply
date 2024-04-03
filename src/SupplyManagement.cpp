@@ -399,21 +399,6 @@ int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
     return res;
 }
 
-int SupplyManagement::edmondsKarpBalance(Location source, Location target){
-    int curflow = -1;
-    int res = 0;
-    initiateGraphFlow(&network);
-    while (curflow != 0) {
-        setUnvisited(&network);
-        curflow = bfsEdmond(source, target);
-        res += curflow;
-    }
-    return res;
-}
-
-    return res;
-}
-
 void SupplyManagement::removePipes(const set<pair<Location, Location>> &pipe_ends) {
     for (const auto &ends: pipe_ends) {
         Location orig = ends.first;

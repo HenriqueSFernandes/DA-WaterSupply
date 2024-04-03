@@ -33,8 +33,6 @@ public:
 
     void readPipes();
 
-    void assembleGraph();
-
     int edmondsKarp(Location source, Location target);
 
     int bfsEdmond(Location source, Location target);
@@ -60,15 +58,6 @@ public:
     void removePipes(const set<pair<Location, Location>> &pipe_ends);
 
     int pumpingFlow(set<Location> PumpingStations);
-
-    void SingleStationRemoval();
-
-    int edmondsKarpBalance(Location source, Location target);
-
-
-    int bfsEdmondKarp(Location source, Location target);
-
-    int bfsEdmondKarpBalance(Location source, Location target);
 private:
     Graph<Location> network;
     string cityFile;
