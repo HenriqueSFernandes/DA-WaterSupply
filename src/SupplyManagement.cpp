@@ -294,6 +294,8 @@ void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
     }
 }
 
+
+
 int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
     resetNetwork();
     int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
@@ -348,15 +350,16 @@ vector<Location> SupplyManagement::checkWaterAvailability() {
 
 }
 
-void SupplyManagement::removeReservoir(const Location &reservoir) {
-    for (auto ver: network.getVertexSet()) {
-        if (ver->getInfo() == reservoir) {
+void SupplyManagement::removeReservoirs(set<Location> reservoirs) {
+    for (auto ver : network.getVertexSet()) {
+        if(reservoirs.find(ver->getInfo()) != reservoirs.end()) {
+
             ver->setProcesssing(false);
         }
     }
 }
 
-int SupplyManagement::brokenReservoirFlow(const Location &reservoir) {
+int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
     resetNetwork();
     int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     map<string, int> cityValue;
@@ -370,8 +373,8 @@ int SupplyManagement::brokenReservoirFlow(const Location &reservoir) {
         }
     }
     resetNetwork();
-    removeReservoir(reservoir);
-    int res = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    removeReservoirs(reservoirs);
+    int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (auto v: network.getVertexSet()) {
         string city;
         city = v->getInfo().getCode();
@@ -391,10 +394,8 @@ int SupplyManagement::brokenReservoirFlow(const Location &reservoir) {
             };
         }
     }
-    int dif = prev - res;
-    cout << "TOTAL " << res << " DIFFERENCE " << dif << endl;
-
-
+    int dif=prev-res;
+    cout<<"TOTAL "<<res<<" DIFFERENCE "<<dif<<endl;
     return res;
 }
 

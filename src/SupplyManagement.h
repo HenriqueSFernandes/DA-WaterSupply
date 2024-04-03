@@ -33,8 +33,6 @@ public:
 
     void readPipes();
 
-    void assembleGraph();
-
     int edmondsKarp(Location source, Location target);
 
     int bfsEdmond(Location source, Location target);
@@ -45,9 +43,9 @@ public:
 
     vector<Location> checkWaterAvailability();
 
-    void removeReservoir(const Location &reservoir);
+    void removeReservoirs(set<Location> PumpingStations );
 
-    int brokenReservoirFlow(const Location &reservoir);
+    int brokenReservoirFlow(set<Location> reservoirs);
 
     int brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends);
 
@@ -60,9 +58,6 @@ public:
     void removePipes(const set<pair<Location, Location>> &pipe_ends);
 
     int pumpingFlow(set<Location> PumpingStations);
-
-    void SingleStationRemoval();
-
 private:
     Graph<Location> network;
     string cityFile;
