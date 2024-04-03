@@ -45,9 +45,9 @@ public:
 
     vector<Location> checkWaterAvailability();
 
-    void removeReservoir(const Location& reservoir);
+    void removeReservoirs(set<Location> PumpingStations );
 
-    int brokenReservoirFlow(const Location& reservoir);
+    int brokenReservoirFlow(set<Location> reservoirs);
 
     const Graph<Location> &getNetwork() const;
 
@@ -58,6 +58,13 @@ public:
     int pumpingFlow(set<Location> PumpingStations);
 
     void SingleStationRemoval();
+
+    int edmondsKarpBalance(Location source, Location target);
+
+
+    int bfsEdmondKarp(Location source, Location target);
+
+    int bfsEdmondKarpBalance(Location source, Location target);
 private:
     Graph<Location> network;
     string cityFile;

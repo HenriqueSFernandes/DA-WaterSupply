@@ -16,6 +16,9 @@ int main() {
     managerTester.readStations();
     managerTester.readPipes();
     managerTester.checkWaterAvailability();
-    managerTester.brokenReservoirFlow(Location(11, "R_11"));
+    set<Location> reservoirs;
+    reservoirs.insert(Location(11, "R_11"));
+    reservoirs.insert(Location(10, "R_10"));
+    managerTester.brokenReservoirFlow(reservoirs);
     return 0;
 }

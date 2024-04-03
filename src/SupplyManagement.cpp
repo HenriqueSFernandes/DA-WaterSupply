@@ -281,7 +281,7 @@ void SupplyManagement::resetNetwork() {
             edge->setFlow(0);
         }
     }
-
+}
 void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
     for (auto ver : network.getVertexSet()) {
         if (PumpingStations.find(ver->getInfo()) != PumpingStations.end()) {
@@ -290,6 +290,8 @@ void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
         }
     }
 }
+
+
 
 int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
     resetNetwork();
@@ -345,15 +347,16 @@ vector<Location> SupplyManagement::checkWaterAvailability() {
 
 }
 
-void SupplyManagement::removeReservoir(const Location& reservoir) {
+void SupplyManagement::removeReservoirs(set<Location> reservoirs) {
     for (auto ver : network.getVertexSet()) {
-        if (ver->getInfo() == reservoir) {
+        if(reservoirs.find(ver->getInfo()) != reservoirs.end()) {
+
             ver->setProcesssing(false);
         }
     }
 }
 
-int SupplyManagement::brokenReservoirFlow(const Location& reservoir) {
+int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
     resetNetwork();
     int prev=edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     map<string,int> cityValue;
@@ -368,7 +371,7 @@ int SupplyManagement::brokenReservoirFlow(const Location& reservoir) {
         }
     }
     resetNetwork();
-    removeReservoir(reservoir);
+    removeReservoirs(reservoirs);
     int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (auto v: network.getVertexSet()) {
         string city;
@@ -387,8 +390,86 @@ int SupplyManagement::brokenReservoirFlow(const Location& reservoir) {
     }
     int dif=prev-res;
     cout<<"TOTAL "<<res<<" DIFFERENCE "<<dif<<endl;
-
-
-
     return res;
+}
+
+int SupplyManagement::edmondsKarpBalance(Location source, Location target){
+    int curflow = -1;
+    int res = 0;
+    initiateGraphFlow(&network);
+    while (curflow != 0) {
+        setUnvisited(&network);
+        curflow = bfsEdmond(source, target);
+        res += curflow;
+    }
+    return res;
+}
+
+
+int SupplyManagement::bfsEdmondKarpBalance(Location source, Location target){
+
+    queue<Vertex<Location> *> myQueue;
+    auto sourceVertex = network.findVertex(source);
+    sourceVertex->setVisited(true);
+    myQueue.push(sourceVertex);
+    while (!myQueue.empty()) {
+        auto cur = myQueue.front();
+        myQueue.pop();
+        if (cur->getInfo() == target) {
+            if (cur->getPath() == NULL) return 0;
+            else {
+                int bottleNeck = cur->getPath()->getCapacity();
+                auto edge = cur->getPath();
+                while (edge != NULL) {
+                    bottleNeck = min((int) (edge->getCapacity() - edge->getFlow()), bottleNeck);
+                    edge = edge->getOrig()->getPath();
+                }
+                int res = bottleNeck;
+                edge = cur->getPath();
+                while ((edge != NULL)) {
+
+                    edge->setFlow(edge->getFlow() + bottleNeck);
+                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity() + bottleNeck);
+                    edge = edge->getOrig()->getPath();
+                }
+                double average=0;
+                double n =0;
+                for( auto vertex : network.getVertexSet()){
+                    for( auto edge : vertex->getAdj()){
+                        if(edge->getDest()->getInfo().getCode() !="SINK" && edge->getDest()->getInfo().getType() == "SOURCE" && edge->getOrig()->getInfo().getCode() !="SINK" && edge->getOrig()->getInfo().getType() == "SOURCE"){
+                            average+=edge->getCapacity()-edge->getFlow();
+                            n++;
+                        }
+                    }
+                }
+                average=average/n;
+                cout<<"AVERAGE IS NOW :"<<average<<endl;
+                for( auto vertex : network.getVertexSet()){
+                    for(auto edge : vertex->getAdj()){
+                        if(edge->getDest()->getInfo().getCode() !="SINK" && edge->getDest()->getInfo().getType() == "SOURCE" && edge->getOrig()->getInfo().getCode() !="SINK" && edge->getOrig()->getInfo().getType() == "SOURCE"){
+                           if((edge->getCapacity()-edge->getFlow())> average){
+                               edge->setSelected(true);
+                           }else{
+                               edge->setSelected(false);
+                           }
+                        }
+                    }
+                }
+
+                return res;
+            }
+        }
+        for (auto edge: cur->getAdj()) {
+            if (edge->getCapacity() - edge->getFlow() > 0 && !edge->getDest()->isVisited() &&
+                edge->getDest()->isProcessing()) { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+
+                edge->getDest()->setVisited(true);
+                edge->getDest()->setPath(edge);
+                myQueue.push(edge->getDest());
+            }
+
+        }
+    }
+
+    return 0;
 }
