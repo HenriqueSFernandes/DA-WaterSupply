@@ -16,6 +16,10 @@ int main() {
     managerTester.readStations();
     managerTester.readPipes();
     managerTester.checkWaterAvailability();
-    managerTester.brokenPipeFlow(Location(15, "R_15"), Location(54, "PS_54"));
+    set<pair<Location, Location>> set1;
+    set1.insert(make_pair(Location(35, "PS_35"), Location(8, "C_8")));
+    set1.insert(make_pair(Location(15, "R_15"), Location(54, "PS_54")));
+    set1.insert(make_pair(Location(36, "PS_36"), Location(12, "C_12")));
+    managerTester.brokenPipeFlow(set1);
     return 0;
 }

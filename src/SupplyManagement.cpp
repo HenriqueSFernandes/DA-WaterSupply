@@ -394,17 +394,21 @@ int SupplyManagement::brokenReservoirFlow(const Location& reservoir) {
     return res;
 }
 
-void SupplyManagement::removePipes(const Location& orig, const Location& dest) {
-    for (auto ver : network.getVertexSet()) {
-        for (auto edge : ver->getAdj()) {
-            if (edge->getOrig()->getInfo() == orig && edge->getDest()->getInfo() == dest) {
-                edge->setCapacity(0);
+void SupplyManagement::removePipes(const set<pair<Location, Location>>& pipe_ends) {
+    for (const auto& ends : pipe_ends) {
+        Location orig = ends.first;
+        Location dest = ends.second;
+        for (auto ver: network.getVertexSet()) {
+            for (auto edge: ver->getAdj()) {
+                if (edge->getOrig()->getInfo() == orig && edge->getDest()->getInfo() == dest) {
+                    edge->setCapacity(0);
+                }
             }
         }
     }
 }
 
-int SupplyManagement::brokenPipeFlow(const Location& orig, const Location& dest) {
+int SupplyManagement::brokenPipeFlow(const set<pair<Location, Location>>& pipe_ends) {
     resetNetwork();
     int prev=edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     map<string,int> cityValue;
@@ -419,7 +423,8 @@ int SupplyManagement::brokenPipeFlow(const Location& orig, const Location& dest)
         }
     }
     resetNetwork();
-    removePipes(orig, dest);
+    removePipes(pipe_ends);
+
     int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (auto v: network.getVertexSet()) {
         string city;

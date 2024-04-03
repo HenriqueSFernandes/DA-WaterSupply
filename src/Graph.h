@@ -104,8 +104,6 @@ public:
 
     void setCapacity(double capacity);
 
-    bool operator==(const Edge<T> &rhs) const;
-
 protected:
     Vertex<T> *dest; // destination vertex
     double weight;
@@ -729,11 +727,6 @@ template<class T>
 Graph<T>::~Graph() {
     deleteMatrix(distMatrix, vertexSet.size());
     deleteMatrix(pathMatrix, vertexSet.size());
-}
-
-template<class T>
-bool Edge<T>::operator==(const Edge<T> &rhs) const {
-    return orig == rhs.orig && dest == rhs.dest;
 }
 
 #endif /* DA_TP_CLASSES_GRAPH */
