@@ -103,11 +103,14 @@ public:
      */
     int brokenReservoirFlow(const Location &reservoir);
 
+    int brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends);
+    
     /**
      * @brief Network getter.
      * @return The graph.
      */
     [[nodiscard]] const Graph<Location> &getNetwork() const;
+    int brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends);
 
     /**
      * @brief Network setter.
@@ -121,13 +124,14 @@ public:
      */
     void removePumpingStations(set<Location> PumpingStations);
 
+    void removePipes(const set<pair<Location, Location>> &pipe_ends);
+
     /**
      * @brief This function evaluates if the cities are receiving enough water if one or more pumping stations are removed.
      * @param PumpingStations The pumping stations to remove.
      * @return The difference in flow after removing the pumping stations.
      */
     int pumpingFlow(set<Location> PumpingStations);
-
 private:
     Graph<Location> network;
     string cityFile;
