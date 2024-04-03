@@ -66,7 +66,7 @@ void SupplyManagement::readCities() {
         city.setMunicipality(city_);
         city.setPopulation(parsePoPToInt(population));
         network.addVertex(city);
-        network.addDirectedEdgeWithResidual(city, SuperSink->getInfo(), INT_MAX);
+        network.addDirectedEdgeWithResidual(city, SuperSink->getInfo(), stod(demand));
     }
 
     cityCsv.close();
@@ -248,7 +248,8 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
         }
         for (auto edge: cur->getAdj()) {
             if (edge->getCapacity() - edge->getFlow() > 0 && !edge->getDest()->isVisited() &&
-                edge->getDest()->isProcessing()) { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+                edge->getDest()->isProcessing() &&
+                edge->isSelected()) { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
 
                 edge->getDest()->setVisited(true);
                 edge->getDest()->setPath(edge);
@@ -279,11 +280,13 @@ void SupplyManagement::resetNetwork() {
         loc->setVisited(false);
         for (auto edge: loc->getAdj()) {
             edge->setFlow(0);
+            edge->setSelected(true);
         }
     }
 }
+
 void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
-    for (auto ver : network.getVertexSet()) {
+    for (auto ver: network.getVertexSet()) {
         if (PumpingStations.find(ver->getInfo()) != PumpingStations.end()) {
 
             ver->setProcesssing(false);
@@ -295,36 +298,36 @@ void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
 
 int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
     resetNetwork();
-    int prev=edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    map<string,int> cityValue;
+    int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    map<string, int> cityValue;
     for (auto v: network.getVertexSet()) {
         string s;
-        s=v->getInfo().getCode();
-        for (auto e: v->getAdj()){
-            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
-                cityValue[s]=e->getFlow();
+        s = v->getInfo().getCode();
+        for (auto e: v->getAdj()) {
+            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
+                cityValue[s] = e->getFlow();
             }
 
         }
     }
     resetNetwork();
     removePumpingStations(PumpingStations);
-    int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    int res = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (auto v: network.getVertexSet()) {
         string city;
-        city=v->getInfo().getCode();
-        for (auto e: v->getAdj()){
-            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
-                if(cityValue[city]>e->getFlow()){
-                    cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<endl;
-            }
+        city = v->getInfo().getCode();
+        for (auto e: v->getAdj()) {
+            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
+                if (cityValue[city] > e->getFlow()) {
+                    cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
+                         << v->getInfo().getMunicipality() << endl;
+                }
 
             };
         }
     }
-    int dif=prev-res;
-    cout<<"TOTAL "<<res<<" DIFFERENCE "<<dif<<endl;
-
+    int dif = prev - res;
+    cout << "TOTAL " << res << " DIFFERENCE " << dif << endl;
 
 
     return res;
@@ -358,16 +361,15 @@ void SupplyManagement::removeReservoirs(set<Location> reservoirs) {
 
 int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
     resetNetwork();
-    int prev=edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    map<string,int> cityValue;
+    int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    map<string, int> cityValue;
     for (auto v: network.getVertexSet()) {
         string s;
-        s=v->getInfo().getCode();
-        for (auto e: v->getAdj()){
-            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
-                cityValue[s]=e->getFlow();
+        s = v->getInfo().getCode();
+        for (auto e: v->getAdj()) {
+            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
+                cityValue[s] = e->getFlow();
             }
-
         }
     }
     resetNetwork();
@@ -375,14 +377,18 @@ int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
     int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (auto v: network.getVertexSet()) {
         string city;
-        city=v->getInfo().getCode();
-        for (auto e: v->getAdj()){
-            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
-                if(cityValue[city]>e->getFlow()) {
-                    if(v->getInfo().getDemand() <= e->getFlow())
-                        cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<" BUT IT'S STILL "<< e->getFlow() - v->getInfo().getDemand()<<" ABOVE DEMAND"<<endl;
+        city = v->getInfo().getCode();
+        for (auto e: v->getAdj()) {
+            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
+                if (cityValue[city] > e->getFlow()) {
+                    if (v->getInfo().getDemand() <= e->getFlow())
+                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
+                             << v->getInfo().getMunicipality() << " BUT IT'S STILL "
+                             << e->getFlow() - v->getInfo().getDemand() << " ABOVE DEMAND" << endl;
                     else
-                        cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<" WHICH NOW HAS A DEFICIT OF "<<v->getInfo().getDemand() - e->getFlow()<<endl;
+                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
+                             << v->getInfo().getMunicipality() << " WHICH NOW HAS A DEFICIT OF "
+                             << v->getInfo().getDemand() - e->getFlow() << endl;
                 }
 
             };
@@ -405,71 +411,64 @@ int SupplyManagement::edmondsKarpBalance(Location source, Location target){
     return res;
 }
 
+    return res;
+}
 
-int SupplyManagement::bfsEdmondKarpBalance(Location source, Location target){
-
-    queue<Vertex<Location> *> myQueue;
-    auto sourceVertex = network.findVertex(source);
-    sourceVertex->setVisited(true);
-    myQueue.push(sourceVertex);
-    while (!myQueue.empty()) {
-        auto cur = myQueue.front();
-        myQueue.pop();
-        if (cur->getInfo() == target) {
-            if (cur->getPath() == NULL) return 0;
-            else {
-                int bottleNeck = cur->getPath()->getCapacity();
-                auto edge = cur->getPath();
-                while (edge != NULL) {
-                    bottleNeck = min((int) (edge->getCapacity() - edge->getFlow()), bottleNeck);
-                    edge = edge->getOrig()->getPath();
+void SupplyManagement::removePipes(const set<pair<Location, Location>> &pipe_ends) {
+    for (const auto &ends: pipe_ends) {
+        Location orig = ends.first;
+        Location dest = ends.second;
+        for (auto ver: network.getVertexSet()) {
+            for (auto edge: ver->getAdj()) {
+                if (edge->getOrig()->getInfo() == orig && edge->getDest()->getInfo() == dest) {
+                    edge->setSelected(false);
+                    edge->getReverse()->setSelected(false);
                 }
-                int res = bottleNeck;
-                edge = cur->getPath();
-                while ((edge != NULL)) {
-
-                    edge->setFlow(edge->getFlow() + bottleNeck);
-                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity() + bottleNeck);
-                    edge = edge->getOrig()->getPath();
-                }
-                double average=0;
-                double n =0;
-                for( auto vertex : network.getVertexSet()){
-                    for( auto edge : vertex->getAdj()){
-                        if(edge->getDest()->getInfo().getCode() !="SINK" && edge->getDest()->getInfo().getType() == "SOURCE" && edge->getOrig()->getInfo().getCode() !="SINK" && edge->getOrig()->getInfo().getType() == "SOURCE"){
-                            average+=edge->getCapacity()-edge->getFlow();
-                            n++;
-                        }
-                    }
-                }
-                average=average/n;
-                cout<<"AVERAGE IS NOW :"<<average<<endl;
-                for( auto vertex : network.getVertexSet()){
-                    for(auto edge : vertex->getAdj()){
-                        if(edge->getDest()->getInfo().getCode() !="SINK" && edge->getDest()->getInfo().getType() == "SOURCE" && edge->getOrig()->getInfo().getCode() !="SINK" && edge->getOrig()->getInfo().getType() == "SOURCE"){
-                           if((edge->getCapacity()-edge->getFlow())> average){
-                               edge->setSelected(true);
-                           }else{
-                               edge->setSelected(false);
-                           }
-                        }
-                    }
-                }
-
-                return res;
             }
         }
-        for (auto edge: cur->getAdj()) {
-            if (edge->getCapacity() - edge->getFlow() > 0 && !edge->getDest()->isVisited() &&
-                edge->getDest()->isProcessing()) { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+    }
+}
 
-                edge->getDest()->setVisited(true);
-                edge->getDest()->setPath(edge);
-                myQueue.push(edge->getDest());
+int SupplyManagement::brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends) {
+    resetNetwork();
+    int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    map<string, int> cityValue;
+    for (auto v: network.getVertexSet()) {
+        string s;
+        s = v->getInfo().getCode();
+        for (auto e: v->getAdj()) {
+            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
+                cityValue[s] = e->getFlow();
             }
 
         }
     }
+    resetNetwork();
+    removePipes(pipe_ends);
 
-    return 0;
+    int res = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    for (auto v: network.getVertexSet()) {
+        string city;
+        city = v->getInfo().getCode();
+        for (auto e: v->getAdj()) {
+            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
+                if (cityValue[city] > e->getFlow()) {
+                    if (v->getInfo().getDemand() <= e->getFlow())
+                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
+                             << v->getInfo().getMunicipality() << " BUT IT'S STILL "
+                             << e->getFlow() - v->getInfo().getDemand() << " ABOVE DEMAND" << endl;
+                    else
+                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
+                             << v->getInfo().getMunicipality() << " WHICH NOW HAS A DEFICIT OF "
+                             << v->getInfo().getDemand() - e->getFlow() << endl;
+                }
+
+            };
+        }
+    }
+    int dif = prev - res;
+    cout << "TOTAL " << res << " DIFFERENCE " << dif << endl;
+
+
+    return res;
 }
