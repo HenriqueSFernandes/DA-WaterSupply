@@ -1,7 +1,4 @@
-//
-// Created by jose on 3/3/24.
-//
-
+/// @file SupplyManagement.h
 #ifndef SUPPLYMANAGEMENT_H
 #define SUPPLYMANAGEMENT_H
 
