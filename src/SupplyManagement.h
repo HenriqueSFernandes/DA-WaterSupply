@@ -49,11 +49,15 @@ public:
 
     int brokenReservoirFlow(const Location& reservoir);
 
+    int brokenPipeFlow(const Location& orig, const Location& dest);
+
     const Graph<Location> &getNetwork() const;
 
     void setNetwork(const Graph<Location> &network);
 
     void removePumpingStations(set<Location> PumpingStations );
+
+    void removePipes(const Location& orig, const Location& dest);
 
     int pumpingFlow(set<Location> PumpingStations);
 

@@ -281,6 +281,7 @@ void SupplyManagement::resetNetwork() {
             edge->setFlow(0);
         }
     }
+}
 
 void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
     for (auto ver : network.getVertexSet()) {
@@ -369,6 +370,56 @@ int SupplyManagement::brokenReservoirFlow(const Location& reservoir) {
     }
     resetNetwork();
     removeReservoir(reservoir);
+    int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    for (auto v: network.getVertexSet()) {
+        string city;
+        city=v->getInfo().getCode();
+        for (auto e: v->getAdj()){
+            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
+                if(cityValue[city]>e->getFlow()) {
+                    if(v->getInfo().getDemand() <= e->getFlow())
+                        cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<" BUT IT'S STILL "<< e->getFlow() - v->getInfo().getDemand()<<" ABOVE DEMAND"<<endl;
+                    else
+                        cout<<"THERE WAS A LOSS OF "<<cityValue[city]-e->getFlow()<<" IN CITY "<<v->getInfo().getMunicipality()<<" WHICH NOW HAS A DEFICIT OF "<<v->getInfo().getDemand() - e->getFlow()<<endl;
+                }
+
+            };
+        }
+    }
+    int dif=prev-res;
+    cout<<"TOTAL "<<res<<" DIFFERENCE "<<dif<<endl;
+
+
+
+    return res;
+}
+
+void SupplyManagement::removePipes(const Location& orig, const Location& dest) {
+    for (auto ver : network.getVertexSet()) {
+        for (auto edge : ver->getAdj()) {
+            if (edge->getOrig()->getInfo() == orig && edge->getDest()->getInfo() == dest) {
+                edge->setCapacity(0);
+            }
+        }
+    }
+}
+
+int SupplyManagement::brokenPipeFlow(const Location& orig, const Location& dest) {
+    resetNetwork();
+    int prev=edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    map<string,int> cityValue;
+    for (auto v: network.getVertexSet()) {
+        string s;
+        s=v->getInfo().getCode();
+        for (auto e: v->getAdj()){
+            if(v->getInfo().getType()=="C" && e->getDest()->getInfo().getCode()=="SINK"){
+                cityValue[s]=e->getFlow();
+            }
+
+        }
+    }
+    resetNetwork();
+    removePipes(orig, dest);
     int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (auto v: network.getVertexSet()) {
         string city;

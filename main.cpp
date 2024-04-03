@@ -16,6 +16,6 @@ int main() {
     managerTester.readStations();
     managerTester.readPipes();
     managerTester.checkWaterAvailability();
-    managerTester.brokenReservoirFlow(Location(11, "R_11"));
+    managerTester.brokenPipeFlow(Location(15, "R_15"), Location(54, "PS_54"));
     return 0;
 }
