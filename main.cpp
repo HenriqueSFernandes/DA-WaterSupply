@@ -7,19 +7,21 @@
 
 int main() {
     cout << "here" << endl;
-    SupplyManagement managerTester = SupplyManagement("../data/Cities.csv", "../data/Reservoir.csv",
-                                                      "../data/Stations.csv", "../data/Pipes.csv");
+    SupplyManagement managerTester = SupplyManagement("../data/Cities_Madeira.csv", "../data/Reservoirs_Madeira.csv",
+                                                      "../data/Stations_Madeira.csv", "../data/Pipes_Madeira.csv");
     //MAYBE CALL OF THESE IN ONE SINGLE FUNCTION
     managerTester.createSupers();
     managerTester.readCities();
     managerTester.readReservoirs();
     managerTester.readStations();
     managerTester.readPipes();
-    managerTester.checkWaterAvailability();
-    set<pair<Location, Location>> set1;
-    set1.insert(make_pair(Location(35, "PS_35"), Location(8, "C_8")));
-    set1.insert(make_pair(Location(15, "R_15"), Location(54, "PS_54")));
-    set1.insert(make_pair(Location(36, "PS_36"), Location(12, "C_12")));
-    managerTester.brokenPipeFlow(set1);
+    set<pair<Location, Location>> locations;
+    locations.insert({managerTester.getNetwork().findVertex(Location(4, "PS_4"))->getInfo(),
+                      managerTester.getNetwork().findVertex(Location(5, "PS_5"))->getInfo()});
+    locations.insert({managerTester.getNetwork().findVertex(Location(9, "PS_9"))->getInfo(),
+                      managerTester.getNetwork().findVertex(Location(10, "PS_10"))->getInfo()});
+    managerTester.brokenPipeFlow(locations);
+    managerTester.resetNetwork();
+
     return 0;
 }
