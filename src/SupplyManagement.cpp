@@ -1,12 +1,7 @@
-//
-// Created by jose on 3/3/24.
-//
-
 #include "SupplyManagement.h"
 #include <fstream>
 #include <sstream>
-#include <iomanip>
-#include <climits>
+#include <stdexcept>
 #include <map>
 
 int parsePoPToInt(const std::string &str) {
@@ -33,7 +28,7 @@ void SupplyManagement::createSupers() {
 }
 
 void SupplyManagement::readCities() {
-    cout << "CITIES" << endl;
+    cout << "Loading cities..." << endl;
     string city;
     string id;
     string code;
@@ -58,7 +53,6 @@ void SupplyManagement::readCities() {
         getline(iss, code, ',');
         getline(iss, demand, ',');
         getline(iss, population, '\r');
-        cout << " READ" << city << "/" << id << "/" << code << "/" << demand << "/" << population << endl;
         const string city_ = city; //just a quick fix
         Location city = Location(stoi(id), code);
         city.setType("C");
@@ -73,7 +67,7 @@ void SupplyManagement::readCities() {
 }
 
 void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maximum Delivery (m3/sec),,
-    cout << "RESERVOIRS" << endl;
+    cout << "Loading reservoirs..." << endl;
     string name;
     string municipality;
     string id;
@@ -98,7 +92,6 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
         getline(iss, id, ',');
         getline(iss, code, ',');
         getline(iss, limit, '\r');
-        cout << " READ " << name << "/" << municipality << "/" << id << "/" << code << "/" << limit << endl;
 
         Location reservoir = Location(stoi(id), code);
         reservoir.setType("R");
@@ -113,7 +106,7 @@ void SupplyManagement::readReservoirs() { // Reservoir,Municipality,Id,Code,Maxi
 }
 
 void SupplyManagement::readStations() { //Id,Code,,
-    cout << "STATIONS" << endl;
+    cout << "Loading pumping stations..." << endl;
     string id;
     string code;
     ifstream stationCsv(stationFile);
@@ -131,7 +124,6 @@ void SupplyManagement::readStations() { //Id,Code,,
         istringstream iss(line);
         getline(iss, id, ',');
         getline(iss, code, '\r');
-        cout << " READ " << id << "/" << code << endl;
         if (code == "") break;
         Location station(stoi(id), code);
         station.setType("PS");
@@ -143,7 +135,7 @@ void SupplyManagement::readStations() { //Id,Code,,
 
 
 void SupplyManagement::readPipes() { //Service_Point_A,Service_Point_B,Capacity,Direction
-    cout << "PIPES" << endl;
+    cout << "Loading pipes..." << endl;
     string codeA;
     string codeB;
     string capacity;
@@ -165,19 +157,15 @@ void SupplyManagement::readPipes() { //Service_Point_A,Service_Point_B,Capacity,
         getline(iss, codeB, ',');
         getline(iss, capacity, ',');
         getline(iss, directed, '\r');
-        cout << " READ " << codeA << "/" << codeB << "/" << capacity << "/" << directed << endl;
         double cap = stod(capacity);
         auto source = network.findVertex(Location(0, codeA));
         auto dest = network.findVertex(Location(0, codeB));
         if (directed == "0") {
-
             network.addBidirectionalEdge(source->getInfo(), dest->getInfo(), cap);
         } else {
             network.addDirectedEdgeWithResidual(source->getInfo(), dest->getInfo(), cap);
         }
-
     }
-
     pipeCsv.close();
 }
 
@@ -192,7 +180,6 @@ void SupplyManagement::setNetwork(const Graph<Location> &network) {
 void setUnvisited(Graph<Location> *g) {
     for (auto el: g->getVertexSet()) {
         el->setVisited(false);
-
     }
 }
 
@@ -262,16 +249,25 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
     return 0;
 }
 
-int SupplyManagement::FlowToCity(Location target) {
+cityFlow SupplyManagement::flowToCity(Location target) {
+    resetNetwork();
+    bool targetFound = false;
+    string cityName;
     for (auto location: network.getVertexSet()) {
         if (location->getInfo().getType() == "C" && location->getInfo().getCode() != target.getCode()) {
             location->setProcesssing(false);
+        } else if (location->getInfo().getType() == "C" && location->getInfo().getCode() == target.getCode()) {
+            location->setProcesssing(true);
+            targetFound = true;
+            cityName = location->getInfo().getMunicipality();
         } else {
             location->setProcesssing(true);
         }
     }
-    return edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-
+    if (!targetFound) {
+        throw invalid_argument("City not found!");
+    }
+    return {cityName, target.getCode(), edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"))};
 }
 
 void SupplyManagement::resetNetwork() {
@@ -293,7 +289,6 @@ void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
         }
     }
 }
-
 
 
 int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
@@ -351,8 +346,8 @@ vector<Location> SupplyManagement::checkWaterAvailability() {
 }
 
 void SupplyManagement::removeReservoirs(set<Location> reservoirs) {
-    for (auto ver : network.getVertexSet()) {
-        if(reservoirs.find(ver->getInfo()) != reservoirs.end()) {
+    for (auto ver: network.getVertexSet()) {
+        if (reservoirs.find(ver->getInfo()) != reservoirs.end()) {
 
             ver->setProcesssing(false);
         }
@@ -374,7 +369,7 @@ int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
     }
     resetNetwork();
     removeReservoirs(reservoirs);
-    int res= edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    int res = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (auto v: network.getVertexSet()) {
         string city;
         city = v->getInfo().getCode();
@@ -394,8 +389,8 @@ int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
             };
         }
     }
-    int dif=prev-res;
-    cout<<"TOTAL "<<res<<" DIFFERENCE "<<dif<<endl;
+    int dif = prev - res;
+    cout << "TOTAL " << res << " DIFFERENCE " << dif << endl;
     return res;
 }
 
@@ -456,4 +451,9 @@ int SupplyManagement::brokenPipeFlow(const set<pair<Location, Location>> &pipe_e
 
 
     return res;
+}
+
+ostream &operator<<(ostream &os, const cityFlow &flow) {
+    os << flow.name << ", with code " << flow.code << ", has a flow of " << flow.flow << ".";
+    return os;
 }

@@ -6,8 +6,20 @@
 #include "Graph.h"
 #include "Location.h"
 #include <set>
+#include <ostream>
 
 using namespace std;
+
+/**
+ * @brief This struct represents a city with its flow.
+ */
+struct cityFlow {
+    string name;
+    string code;
+    int flow;
+
+    friend ostream &operator<<(ostream &os, const cityFlow &flow);
+};
 
 /**
  * @brief The main class of the program. It is responsible for running all the algorithms and controlling the network.
@@ -77,7 +89,7 @@ public:
      * @param target The target city.
      * @return The flow to the given city.
      */
-    int FlowToCity(Location target);
+    cityFlow flowToCity(Location target);
 
     /**
      * @brief Resets the network by setting the processing to true and the visited to false.
@@ -94,7 +106,7 @@ public:
      * @brief Removes one or more reservoirs by setting their processing attribute to false.
      * @param reservoir
      */
-    void removeReservoirs(set<Location> PumpingStations );
+    void removeReservoirs(set<Location> PumpingStations);
 
     /**
      * @brief This function evaluates if the cities are receiving enough water if one or more reservoirs are removed.
@@ -108,7 +120,9 @@ public:
      * @param pipe_ends The pipes to be removed.
      * @return The difference in flow after the removal.
      */
-    int brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends);
+    int brokenPipeFlow(const set<pair<Location, Location>>
+
+                       &pipe_ends);
 
     /**
      * @brief Network getter.
@@ -132,7 +146,9 @@ public:
      * @brief Removes a pipe by setting its selected attribute to false.
      * @param pipe_ends The pipe to be removed.
      */
-    void removePipes(const set<pair<Location, Location>> &pipe_ends);
+    void removePipes(const set<pair<Location, Location>>
+
+                     &pipe_ends);
 
     /**
      * @brief This function evaluates if the cities are receiving enough water if one or more pumping stations are removed.
