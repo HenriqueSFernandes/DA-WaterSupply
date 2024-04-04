@@ -15,13 +15,10 @@ int main() {
     managerTester.readReservoirs();
     managerTester.readStations();
     managerTester.readPipes();
-    set<pair<Location, Location>> locations;
-    locations.insert({managerTester.getNetwork().findVertex(Location(4, "PS_4"))->getInfo(),
-                      managerTester.getNetwork().findVertex(Location(5, "PS_5"))->getInfo()});
-    locations.insert({managerTester.getNetwork().findVertex(Location(9, "PS_9"))->getInfo(),
-                      managerTester.getNetwork().findVertex(Location(10, "PS_10"))->getInfo()});
-    managerTester.brokenPipeFlow(locations);
-    managerTester.resetNetwork();
-
+    managerTester.checkWaterAvailability();
+    set<Location> reservoirs;
+    reservoirs.insert(Location(11, "R_11"));
+    reservoirs.insert(Location(10, "R_10"));
+    managerTester.brokenReservoirFlow(reservoirs);
     return 0;
 }

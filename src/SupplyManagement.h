@@ -91,17 +91,17 @@ public:
     vector<Location> checkWaterAvailability();
 
     /**
-     * @brief Removes a reservoir by setting the processing attribute to false.
+     * @brief Removes one or more reservoirs by setting their processing attribute to false.
      * @param reservoir
      */
-    void removeReservoir(const Location &reservoir);
+    void removeReservoirs(set<Location> PumpingStations );
 
     /**
      * @brief This function evaluates if the cities are receiving enough water if one or more reservoirs are removed.
      * @param reservoir The reservoir to be removed.
      * @return The difference in flow after the removal.
      */
-    int brokenReservoirFlow(const Location &reservoir);
+    int brokenReservoirFlow(set<Location> reservoirs);
 
     /**
      * @brief This function evaluates if the cities are receiving enough water if one or more pipes are removed.
@@ -140,7 +140,7 @@ public:
      * @return The difference in flow after removing the pumping stations.
      */
     int pumpingFlow(set<Location> PumpingStations);
-    
+
 private:
     Graph<Location> network;
     string cityFile;
