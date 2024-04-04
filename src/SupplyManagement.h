@@ -122,13 +122,24 @@ public:
     int brokenReservoirFlow(set<Location> reservoirs);
 
     /**
+     * @brief This function calculates the impact of removing reservoirs, pumping stations and pipes on the flow of the network.
+     * @param disabledReservoirs The disabled reservoirs.
+     * @param disabledStations The disabled pumping stations.
+     * @param disabledPipes The disabled pipes.
+     * Additional information about the return value:
+     * It's a pair. The first element is another pair with the old flow and the new flow. The second element is a vector of pairs. The first element is a pointer to the vertex, an the second is the original flow.
+     * @return The global flow before and after disabling the locations and the affected cities.
+     */
+    pair<pair<int, int>, vector<pair<Vertex<Location> *, int>>>
+    flowWithDisabledLocations(const set<Location> &disabledReservoirs, const set<Location> &disabledStations,
+                              const set<pair<Location, Location>> &disabledPipes);
+
+    /**
      * @brief This function evaluates if the cities are receiving enough water if one or more pipes are removed.
      * @param pipe_ends The pipes to be removed.
      * @return The difference in flow after the removal.
      */
-    int brokenPipeFlow(const set<pair<Location, Location>>
-
-                       &pipe_ends);
+    int brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends);
 
     /**
      * @brief Network getter.

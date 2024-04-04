@@ -12,6 +12,9 @@
 class Menu {
 private:
     SupplyManagement manager;
+    set<Location> disabledReservoirs;
+    set<Location> disabledStations;
+    set<pair<Location, Location>> disabledPipes;
 public:
     /**
      * @brief Parameterized constructor.
@@ -23,7 +26,7 @@ public:
      * @brief Loops until the input is a valid integer.
      * @return A valid integer.
      */
-    static int askForAValidInt();
+    static int getValidInt();
 
     /**
      * @brief Sets the terminal text color to red.
@@ -49,6 +52,11 @@ public:
      * @brief Menu for analysing details of the network, like flow to the cities and if the demand is met.
      */
     void analyseMenu();
+
+    /**
+     * @brief Menu for enabling or disabling locations.F
+     */
+    void disableLocationsMenu();
 };
 
 

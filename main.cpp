@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main() {
-    bool useMadeiraCSV = false;
+    bool useMadeiraCSV = true;
 
     string cityFile = "../data/Cities.csv";
     string reservoirFile = "../data/Reservoir.csv";

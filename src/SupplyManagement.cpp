@@ -242,10 +242,8 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
                 edge->getDest()->setPath(edge);
                 myQueue.push(edge->getDest());
             }
-
         }
     }
-
     return 0;
 }
 
@@ -282,6 +280,7 @@ void SupplyManagement::resetNetwork() {
 }
 
 void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
+    if (PumpingStations.empty()) return;
     for (auto ver: network.getVertexSet()) {
         if (PumpingStations.find(ver->getInfo()) != PumpingStations.end()) {
 
@@ -344,9 +343,9 @@ vector<pair<Location, int>> SupplyManagement::checkWaterAvailability() {
 }
 
 void SupplyManagement::removeReservoirs(set<Location> reservoirs) {
+    if (reservoirs.empty()) return;
     for (auto ver: network.getVertexSet()) {
         if (reservoirs.find(ver->getInfo()) != reservoirs.end()) {
-
             ver->setProcesssing(false);
         }
     }
@@ -359,6 +358,7 @@ int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
     for (auto v: network.getVertexSet()) {
         string s;
         s = v->getInfo().getCode();
+        // TODO change this to adj[0]
         for (auto e: v->getAdj()) {
             if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
                 cityValue[s] = e->getFlow();
@@ -383,7 +383,6 @@ int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
                              << v->getInfo().getMunicipality() << " WHICH NOW HAS A DEFICIT OF "
                              << v->getInfo().getDemand() - e->getFlow() << endl;
                 }
-
             };
         }
     }
@@ -393,6 +392,7 @@ int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
 }
 
 void SupplyManagement::removePipes(const set<pair<Location, Location>> &pipe_ends) {
+    if (pipe_ends.empty()) return;
     for (const auto &ends: pipe_ends) {
         Location orig = ends.first;
         Location dest = ends.second;
@@ -465,6 +465,36 @@ pair<vector<cityFlow>, int> SupplyManagement::flowToAllCities() {
         }
     }
     return {cities, totalFlow};
+}
+
+pair<pair<int, int>, vector<pair<Vertex<Location> *, int>>>
+SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservoirs,
+                                            const set<Location> &disabledStations,
+                                            const set<pair<Location, Location>> &disabledPipes) {
+    resetNetwork();
+    int previousGlobalFlow = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    map<string, int> cities;
+    vector<pair<Vertex<Location> *, int>> impactedCities;
+    for (Vertex<Location> *vertex: network.getVertexSet()) {
+        if (vertex->getInfo().getType() == "C") {
+            cities[vertex->getInfo().getCode()] = (int) vertex->getAdj()[0]->getFlow();
+        }
+    }
+    resetNetwork();
+    removeReservoirs(disabledReservoirs);
+    removePumpingStations(disabledStations);
+    removePipes(disabledPipes);
+    int newGlobalFlow = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    for (Vertex<Location> *vertex: network.getVertexSet()) {
+        if (vertex->getInfo().getType() == "C") {
+            int newFlow = (int) vertex->getAdj()[0]->getFlow();
+            int oldFlow = cities[vertex->getInfo().getCode()];
+            if (newFlow < oldFlow) {
+                impactedCities.emplace_back(vertex, oldFlow);
+            }
+        }
+    }
+    return {{previousGlobalFlow, newGlobalFlow}, impactedCities};
 }
 
 ostream &operator<<(ostream &os, const cityFlow &flow) {
