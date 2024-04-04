@@ -65,7 +65,16 @@ void Menu::analyseMenu() {
                 resetColor();
             }
         } else if (option == "2") {
-            
+            pair<vector<cityFlow>, int> totalFlow = manager.flowToAllCities();
+            for (cityFlow city : totalFlow.first){
+                cout << city << endl;
+            }
+            cout << "\nThe total flow is ";
+            setColorCyan();
+            cout << totalFlow.second;
+            resetColor();
+            cout << ".\n";
+
 
         } else if (option == "3") {
 

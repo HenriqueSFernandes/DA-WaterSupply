@@ -453,7 +453,24 @@ int SupplyManagement::brokenPipeFlow(const set<pair<Location, Location>> &pipe_e
     return res;
 }
 
+pair<vector<cityFlow>, int> SupplyManagement::flowToAllCities() {
+    resetNetwork();
+    edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    int totalFlow = 0;
+    vector<cityFlow> cities;
+    for (Vertex<Location> *location: getNetwork().getVertexSet()) {
+        if (location->getInfo().getType() == "C") {
+            int flow = (int) location->getAdj()[0]->getFlow();
+            cities.push_back({location->getInfo().getMunicipality(), location->getInfo().getCode(),
+                              flow});
+            totalFlow += flow;
+        }
+    }
+    return {cities, totalFlow};
+}
+
 ostream &operator<<(ostream &os, const cityFlow &flow) {
-    os << "\033[0;36m" << flow.name << "\033[0m" << ", with code " << flow.code << ", has a flow of "  << "\033[0;36m" << flow.flow << "\033[0m" << ".";
+    os << "\033[0;36m" << flow.name << "\033[0m" << ", with code " << flow.code << ", has a flow of " << "\033[0;36m"
+       << flow.flow << "\033[0m" << ".";
     return os;
 }

@@ -92,6 +92,12 @@ public:
     cityFlow flowToCity(Location target);
 
     /**
+     * @brief This method calculates the actual flow to all cities.
+     * @return The flow to all cities and the total flow.
+     */
+    pair<vector<cityFlow>, int> flowToAllCities();
+
+    /**
      * @brief Resets the network by setting the processing to true and the visited to false.
      */
     void resetNetwork();
