@@ -328,21 +328,19 @@ int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
     return res;
 }
 
-vector<Location> SupplyManagement::checkWaterAvailability() {
+vector<pair<Location, int>> SupplyManagement::checkWaterAvailability() {
     resetNetwork();
     edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    vector<Location> citiesWithMoreDemandThanFlow;
+    vector<pair<Location, int>> citiesWithMoreDemandThanFlow;
     for (Vertex<Location> *location: network.getVertexSet()) {
         if (location->getInfo().getType() == "C") {
-            if (location->getInfo().getDemand() > location->getAdj()[0]->getFlow()) {
-                citiesWithMoreDemandThanFlow.push_back(location->getInfo());
-                cout << location->getInfo().getMunicipality() << " has a flow of " << location->getAdj()[0]->getFlow()
-                     << " and a demand of " << location->getInfo().getDemand() << endl;
+            int flow = (int) location->getAdj()[0]->getFlow();
+            if (location->getInfo().getDemand() > flow) {
+                citiesWithMoreDemandThanFlow.emplace_back(location->getInfo(), flow);
             }
         }
     }
     return citiesWithMoreDemandThanFlow;
-
 }
 
 void SupplyManagement::removeReservoirs(set<Location> reservoirs) {
@@ -470,7 +468,8 @@ pair<vector<cityFlow>, int> SupplyManagement::flowToAllCities() {
 }
 
 ostream &operator<<(ostream &os, const cityFlow &flow) {
-    os << "\033[0;36m" << flow.name << "\033[0m" << ", with code " << flow.code << ", has a flow of " << "\033[0;36m"
+    os << "\033[0;36m" << flow.name << "\033[0m" << ", with code " << flow.code << ", has a flow of "
+       << "\033[0;36m"
        << flow.flow << "\033[0m" << ".";
     return os;
 }

@@ -106,7 +106,7 @@ public:
      * @brief Checks if the cities are receiving enough water.
      * @return A vector with the cities that are not receiving enough water.
      */
-    vector<Location> checkWaterAvailability();
+    vector<pair<Location, int>> checkWaterAvailability();
 
     /**
      * @brief Removes one or more reservoirs by setting their processing attribute to false.

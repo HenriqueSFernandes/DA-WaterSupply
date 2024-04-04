@@ -66,7 +66,7 @@ void Menu::analyseMenu() {
             }
         } else if (option == "2") {
             pair<vector<cityFlow>, int> totalFlow = manager.flowToAllCities();
-            for (cityFlow city : totalFlow.first){
+            for (cityFlow city: totalFlow.first) {
                 cout << city << endl;
             }
             cout << "\nThe total flow is ";
@@ -74,10 +74,27 @@ void Menu::analyseMenu() {
             cout << totalFlow.second;
             resetColor();
             cout << ".\n";
-
-
         } else if (option == "3") {
-
+            vector<pair<Location, int>> citiesWithMoreDemandThanFlow = manager.checkWaterAvailability();
+            for (const pair<Location, int> &city: citiesWithMoreDemandThanFlow) {
+                setColorCyan();
+                cout << city.first.getMunicipality();
+                resetColor();
+                cout << ", with code " << city.first.getCode()
+                     << ", is not receiving enough water, since it has a demand of ";
+                setColorCyan();
+                cout << city.first.getDemand();
+                resetColor();
+                cout << " and a flow of ";
+                setColorCyan();
+                cout << city.second;
+                resetColor();
+                cout << ", which means it has a deficit of ";
+                setColorCyan();
+                cout << city.first.getDemand() - city.second;
+                resetColor();
+                cout << ".\n";
+            }
         } else if (option == "0") {
             break;
         } else {
