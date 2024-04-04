@@ -74,6 +74,27 @@ void Menu::analyseMenu() {
             cout << totalFlow.second;
             resetColor();
             cout << ".\n";
+            cout << "Do you wish to save the output to a file? (y/n)\n";
+            string saveOutput;
+            cin >> saveOutput;
+            if (saveOutput == "y") {
+                string filename = "flow" + to_string(time(nullptr)) + ".txt";
+                ofstream file;
+                file.open(filename);
+                if (!file) {
+                    cerr << "Error while opening file!\n";
+                } else {
+                    for (const cityFlow &city: totalFlow.first) {
+                        // Here we can't use file << city because it would write the colors as text.
+                        file << city.name << ", with code " << city.code << ", has a flow of " << city.flow << ".\n";
+                    }
+                    file << "\nThe total flow is ";
+                    file << totalFlow.second;
+                    file << ".\n";
+                    file.close();
+                    cout << "File saved to " << filesystem::current_path() / filename << ".\n";
+                }
+            }
         } else if (option == "3") {
             vector<pair<Location, int>> citiesWithMoreDemandThanFlow = manager.checkWaterAvailability();
             for (const pair<Location, int> &city: citiesWithMoreDemandThanFlow) {
