@@ -11,18 +11,44 @@
  */
 class Menu {
 private:
-    SupplyManagement supplyManager;
+    SupplyManagement manager;
 public:
     /**
      * @brief Parameterized constructor.
      * @param manager Supply manager.
      */
-    explicit Menu(SupplyManagement manager) : supplyManager(std::move(manager)) {}
+    explicit Menu(SupplyManagement manager) : manager(std::move(manager)) {}
+
+    /**
+     * @brief Loops until the input is a valid integer.
+     * @return A valid integer.
+     */
+    static int askForAValidInt();
+
+    /**
+     * @brief Sets the terminal text color to red.
+     */
+    static void setColorRed();
+
+    /**
+     * @brief Sets the terminal text color to cyan.
+     */
+    static void setColorCyan();
+
+    /**
+     * @brief Reset the terminal text color to default.
+     */
+    static void resetColor();
 
     /**
      * @brief Main menu.
      */
     void start();
+
+    /**
+     * @brief Menu for analysing details of the network, like flow to the cities and if the demand is met.
+     */
+    void analyseMenu();
 };
 
 

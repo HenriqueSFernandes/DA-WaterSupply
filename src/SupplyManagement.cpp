@@ -454,6 +454,6 @@ int SupplyManagement::brokenPipeFlow(const set<pair<Location, Location>> &pipe_e
 }
 
 ostream &operator<<(ostream &os, const cityFlow &flow) {
-    os << flow.name << ", with code " << flow.code << ", has a flow of " << flow.flow << ".";
+    os << "\033[0;36m" << flow.name << "\033[0m" << ", with code " << flow.code << ", has a flow of "  << "\033[0;36m" << flow.flow << "\033[0m" << ".";
     return os;
 }
