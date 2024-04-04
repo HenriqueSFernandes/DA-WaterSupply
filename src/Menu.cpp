@@ -103,5 +103,3 @@ void Menu::analyseMenu() {
 
     }
 }
-
-
