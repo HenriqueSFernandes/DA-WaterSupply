@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <climits>
 #include <map>
+#include "math.h"
 
 int parsePoPToInt(const std::string &str) {
     std::string cleanedStr = str;
@@ -213,6 +214,7 @@ int SupplyManagement::edmondsKarp(Location source, Location target) {
         setUnvisited(&network);
         curflow = bfsEdmond(source, target);
         res += curflow;
+        cout<<curflow<<endl;
     }
     return res;
 }
@@ -475,4 +477,137 @@ void SupplyManagement::getNetworkStats(double & avg, double  &var, double  &maxi
     avg/=n;
     var=(var/n)-avg*avg;
     return;
+}
+
+int SupplyManagement::edmondsKarpBalance(Location source, Location target) {
+    // O algorithmo de edmond karp uso bfs
+    double avg=0;
+    double var=0; //unused
+    double max=0; //unused
+    double ratio=avg;
+    int curflow = -1;
+    int res = 0;
+    int numedges=0;
+    int numSelected=0;
+    initiateGraphFlow(&network);
+    while (true) {
+        //cout<<"RATIO IS"<<ratio<<endl;
+        numSelected=0;
+        numedges=0;
+        for( auto vertex : network.getVertexSet()){
+            for( auto edge : vertex->getAdj()){
+                if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+                if((edge->getCapacity()-edge->getFlow())/(edge->getCapacity())>ratio){
+                    edge->setSelected(true);
+                    numSelected++;
+                }else{
+                    edge->setSelected(false);
+                }
+                numedges++;
+
+            }
+
+        }
+        for( auto vertex : network.getVertexSet()){
+            for( auto edge : vertex->getAdj()){
+                if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+                if(!edge->isSelected()){
+
+                    double numEmptyPipes=0;
+                    double tot=0;
+                    double soma=0;
+                    for( auto edge : edge->getDest()->getAdj()){
+                        if(edge->isSelected())numEmptyPipes++;
+                        tot++;
+                        soma+=edge->getCapacity()-edge->getFlow();
+
+                    }
+                    for( auto edge : edge->getOrig()->getAdj()){
+                        if(edge->isSelected())numEmptyPipes++;
+                        tot++;
+                        soma+=edge->getCapacity()-edge->getFlow();
+
+                    }
+                    double limit=soma/tot;
+                    //cout<<"LIMIT IS "<<limit<<endl;
+                    //cout<<"CAP- FLOW"<<edge->getCapacity()-edge->getFlow()<<endl;
+                    //cout<<"BONS VIZINHOS"<<numEmptyPipes/tot<<endl;
+
+                    if((numEmptyPipes/tot >0.75) && (edge->getCapacity()-edge->getFlow())> limit/2  ){
+                        edge->setSelected(true);
+                        //cout<<"HIT"<<endl;
+                    }
+                }
+
+            }
+
+        }
+        //cout<<"SELECTED"<<numSelected<<" OUT OF " <<numedges<<endl;
+        setUnvisited(&network);
+        curflow = bfsEdmondBalance(source, target);
+        res += curflow;
+        getNetworkStats(avg,var,max);
+        if(curflow==0){
+            //cout<<"CURFLOW IS 0"<<endl;
+            if(numSelected==numedges)
+                return res;
+            else{
+                //cout<<"LOWER BOUND"<<endl;
+                ratio-= sqrt(var)*0.1; //relaxar a restricao
+            }
+        }else{
+            //cout<<"CAN UP"<<endl;
+            ratio=avg; // metade mais a meio desvio padrao de distancia
+        }
+
+        cout<<curflow<<endl;
+
+    }
+
+    return res;
+}
+
+int SupplyManagement::bfsEdmondBalance(Location source, Location target) {
+
+    queue<Vertex<Location> *> myQueue;
+    auto sourceVertex = network.findVertex(source);
+    sourceVertex->setVisited(true);
+    myQueue.push(sourceVertex);
+    while (!myQueue.empty()) {
+        auto cur = myQueue.front();
+        myQueue.pop();
+        if (cur->getInfo() == target) {
+            if (cur->getPath() == NULL) return 0;
+            else {
+                int bottleNeck = cur->getPath()->getCapacity();
+                auto edge = cur->getPath();
+                while (edge != NULL) {
+                    bottleNeck = min((int) (edge->getCapacity() - edge->getFlow()), bottleNeck);
+                    edge = edge->getOrig()->getPath();
+                }
+                int res = bottleNeck;
+                edge = cur->getPath();
+                while ((edge != NULL)) {
+                    edge->setFlow(edge->getFlow() + bottleNeck);
+                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity() + bottleNeck);
+                    edge = edge->getOrig()->getPath();
+                }
+
+                return res;
+            }
+        }
+        for (auto edge: cur->getAdj()) {
+            if (edge->getCapacity() - edge->getFlow() > 0 && !edge->getDest()->isVisited() &&
+                edge->getDest()->isProcessing() &&
+                edge->isSelected()) { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+
+                edge->getDest()->setVisited(true);
+                edge->getDest()->setPath(edge);
+                myQueue.push(edge->getDest());
+            }
+
+        }
+    }
+
+    return 0;
 }

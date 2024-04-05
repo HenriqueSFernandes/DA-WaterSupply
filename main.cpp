@@ -7,8 +7,8 @@
 
 int main() {
     cout << "here" << endl;
-    SupplyManagement managerTester = SupplyManagement("../data/Cities_Madeira.csv", "../data/Reservoirs_Madeira.csv",
-                                                      "../data/Stations_Madeira.csv", "../data/Pipes_Madeira.csv");
+    SupplyManagement managerTester = SupplyManagement("../data/Cities.csv", "../data/Reservoir.csv",
+                                                      "../data/Stations.csv", "../data/Pipes.csv");
     //MAYBE CALL OF THESE IN ONE SINGLE FUNCTION
     managerTester.createSupers();
     managerTester.readCities();
@@ -20,7 +20,13 @@ int main() {
     double avg;
     double var;
     double  maxi;
+    cout<<"PREV STATS"<<endl;
     managerTester.getNetworkStats(avg, var, maxi);
     cout<<"AVG IS"<<avg<<" VAR IS "<< var<<" MAX IS "<<maxi<<endl;
+    cout<<managerTester.edmondsKarpBalance(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    cout<<"NEW STATS"<<endl;
+    managerTester.getNetworkStats(avg, var, maxi);
+    cout<<"AVG IS"<<avg<<" VAR IS "<< var<<" MAX IS "<<maxi<<endl;
+
     return 0;
 }

@@ -146,6 +146,29 @@ public:
      */
     void getNetworkStats(double &avg, double &var, double &max);
 
+    /**
+     * @brief The Edmonds Karp algorithms for finding the max flow between 2 locations.
+     * @param source The source location.
+     * @param target The target location.
+     * @return The flow between the 2 locations.
+     */
+    int edmondsKarpBalance(Location source, Location target);
+
+    /**
+     * @brief Auxiliary BFS function that is used in the edmondsKarp() function.
+     * @param source The source location.
+     * @param target The target location.
+     * @return The flow between the 2 locations.
+     */
+    int bfsEdmondBalance(Location source, Location target);
+
+    /**
+     * @brief This method calculates the theoretical maximum flow to a specific city, ignoring the other cities.
+     * It does so by setting every other city processing attribute to false, and the Edmonds Karp algorithm only calculates the flow for a city with the processing attribute as true.
+     * By doing this, the algorithm ignores the other cities and calculates the maximum theoretical flow to the given city.
+     * @param target The target city.
+     * @return The flow to the given city.
+     */
 private:
     Graph<Location> network;
     string cityFile;
