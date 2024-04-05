@@ -457,3 +457,22 @@ int SupplyManagement::brokenPipeFlow(const set<pair<Location, Location>> &pipe_e
 
     return res;
 }
+
+void SupplyManagement::getNetworkStats(double & avg, double  &var, double  &maximum){
+    avg=0;
+    var=0;
+    maximum=0;
+    double n=0;
+    for( auto vertex : network.getVertexSet()){
+        for( auto edge : vertex->getAdj()){
+            if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getOrig()->getInfo().getCode()=="SINK" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+            avg+=(edge->getCapacity()-edge->getFlow())/(edge->getCapacity());
+            var+=(edge->getCapacity()-edge->getFlow())/(edge->getCapacity())*(edge->getCapacity()-edge->getFlow())/(edge->getCapacity());
+            maximum=max(maximum, (edge->getCapacity()-edge->getFlow())/(edge->getCapacity()));
+            n++;
+        }
+    }
+    avg/=n;
+    var=(var/n)-avg*avg;
+    return;
+}

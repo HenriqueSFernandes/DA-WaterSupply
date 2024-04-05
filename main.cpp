@@ -15,10 +15,12 @@ int main() {
     managerTester.readReservoirs();
     managerTester.readStations();
     managerTester.readPipes();
-    managerTester.checkWaterAvailability();
-    set<Location> reservoirs;
-    reservoirs.insert(Location(11, "R_11"));
-    reservoirs.insert(Location(10, "R_10"));
-    managerTester.brokenReservoirFlow(reservoirs);
+    managerTester.resetNetwork();
+    managerTester.edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    double avg;
+    double var;
+    double  maxi;
+    managerTester.getNetworkStats(avg, var, maxi);
+    cout<<"AVG IS"<<avg<<" VAR IS "<< var<<" MAX IS "<<maxi<<endl;
     return 0;
 }

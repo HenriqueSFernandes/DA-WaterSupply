@@ -140,6 +140,11 @@ public:
      * @return The difference in flow after removing the pumping stations.
      */
     int pumpingFlow(set<Location> PumpingStations);
+    /**
+     * @brief This function evaluates statistics of flow tension along the pipes.
+     * @param AVG The average flow tension,Var the variance of the flow tension, Max the maximum flow tension.
+     */
+    void getNetworkStats(double &avg, double &var, double &max);
 
 private:
     Graph<Location> network;
