@@ -43,31 +43,37 @@ public:
 
     /**
      * @brief Creates the super source and super sink.
+     * Complexity is O(n), due to the use of findVertex() inside of addVertex().
      */
     void createSupers();
 
     /**
      * @brief Reads the cities from the file.
+     * Complexity is O(n * m) where n is the number of cities in the file and m is the number of vertices already added for each n iteration.
      */
     void readCities();
 
     /**
      * @brief Reads the reservoirs from the file.
+     * Complexity is O(n * m), for the same reason as readCities().
      */
     void readReservoirs();
 
     /**
      * @brief Reads the pumping stations from the file.
+     * Complexity is O(n * m), for the same reason as readCities().
      */
     void readStations();
 
     /**
      * @brief Reads the pipes from the file.
+     * Complexity is O(n * m), for the same reason as readCities().
      */
     void readPipes();
 
     /**
      * @brief The Edmonds Karp algorithms for finding the max flow between 2 locations.
+     * Complexity is O(V * E^2).
      * @param source The source location.
      * @param target The target location.
      * @return The flow between the 2 locations.
@@ -86,6 +92,7 @@ public:
      * @brief This method calculates the theoretical maximum flow to a specific city, ignoring the other cities.
      * It does so by setting every other city processing attribute to false, and the Edmonds Karp algorithm only calculates the flow for a city with the processing attribute as true.
      * By doing this, the algorithm ignores the other cities and calculates the maximum theoretical flow to the given city.
+     * Complexity is O(V + E) + edmondsKarp(). Even though there are other parts of this algorithm, the Edmonds-Karp is the most significant one, so the complexity can be approximated to O(V * E^2).
      * @param target The target city.
      * @return The flow to the given city.
      */
@@ -93,23 +100,27 @@ public:
 
     /**
      * @brief This method calculates the actual flow to all cities.
+     * Complexity is O(V + E) + edmondsKarp(). Even though there are other parts of this algorithm, the Edmonds-Karp is the most significant one, so the complexity can be approximated to O(V * E^2).
      * @return The flow to all cities and the total flow.
      */
     pair<vector<cityFlow>, int> flowToAllCities();
 
     /**
      * @brief Resets the network by setting the processing to true and the visited to false.
+     * Complexity is O(V + E).
      */
     void resetNetwork();
 
     /**
      * @brief Checks if the cities are receiving enough water.
+     * Complexity is O(V + E) + edmondsKarp(). Even though there are other parts of this algorithm, the Edmonds-Karp is the most significant one, so the complexity can be approximated to O(V * E^2).
      * @return A vector with the cities that are not receiving enough water.
      */
     vector<pair<Location, int>> checkWaterAvailability();
 
     /**
      * @brief Removes one or more reservoirs by setting their processing attribute to false.
+     * Complexity is O(V * log(n)).
      * @param reservoir
      */
     void removeReservoirs(set<Location> PumpingStations);
@@ -121,6 +132,7 @@ public:
      * @param disabledPipes The disabled pipes.
      * Additional information about the return value:
      * It's a pair. The first element is another pair with the old flow and the new flow. The second element is a vector of pairs. The first element is a pointer to the vertex, an the second is the original flow.
+     * Complexity is O(V + E) + 2 * edmondsKarp(). Even though there are other parts of this algorithm, the Edmonds-Karp is the most significant one, so the complexity can be approximated to O(V * E^2).
      * @return The global flow before and after disabling the locations and the affected cities.
      */
     pair<pair<int, int>, vector<pair<Vertex<Location> *, int>>>
@@ -141,17 +153,17 @@ public:
 
     /**
      * @brief Removes a pumping station by setting its processing attribute to false.
+     * Complexity is O(V * log(n)).
      * @param PumpingStations A set of pumping stations.
      */
     void removePumpingStations(set<Location> PumpingStations);
 
     /**
      * @brief Removes a pipe by setting its selected attribute to false.
+     * Complexity is O(n * (V + E)).
      * @param pipe_ends The pipe to be removed.
      */
-    void removePipes(const set<pair<Location, Location>>
-
-                     &pipe_ends);
+    void removePipes(const set<pair<Location, Location>> &pipe_ends);
 
 private:
     Graph<Location> network;
