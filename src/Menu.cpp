@@ -117,7 +117,7 @@ void Menu::printFlowWithDisabledLocations() {
     vector<pair<Vertex<Location> *, int>> affectedCities = impact.second;
     if (affectedCities.empty()) {
         setColorCyan();
-        cout << "There were no affected cities.\n";
+        cout << "There were no affected cities.\n\n";
         resetColor();
     } else {
         cout << "There were ";
@@ -148,7 +148,7 @@ void Menu::printFlowWithDisabledLocations() {
         setColorCyan();
         cout << newFlow;
         resetColor();
-        cout << ".\n";
+        cout << ".\n\n";
     }
 }
 
@@ -184,26 +184,40 @@ void Menu::disablePipes() {
 }
 
 void Menu::disableStations() {
+    regex pattern("^PS_[1-9]\\d*$");
     while (true) {
         clearScreen();
         printCurrentlyDisabledStations();
-        cout << "Please insert the id of the pumping station (0 to exit)\n";
-        int stationId = getValidInt();
-        if (stationId == 0) break;
-        string stationCode = "PS_" + to_string(stationId);
-        disabledStations.insert(Location(stationId, stationCode));
+        string stationCode;
+        while (true) {
+            cout << "Please insert the id of the pumping station (0 to exit)\n";
+            cin >> stationCode;
+            if (stationCode == "0") return;
+            if (regex_match(stationCode, pattern)) break;
+            setColorRed();
+            cout << "Invalid code\n";
+            resetColor();
+        }
+        disabledStations.insert(Location(0, stationCode));
     }
 }
 
 void Menu::disableReservoirs() {
+    regex pattern("^R_[1-9]\\d*$");
     while (true) {
         clearScreen();
         printCurrentlyDisabledReservoirs();
-        cout << "\nPlease insert the id of the reservoir (0 to exit)\n";
-        int reservoirId = getValidInt();
-        if (reservoirId == 0) break;
-        string reservoirCode = "R_" + to_string(reservoirId);
-        disabledReservoirs.insert(Location(reservoirId, reservoirCode));
+        string reservoirCode;
+        while (true) {
+            cout << "\nPlease insert the code of the reservoir (0 to exit)\n";
+            cin >> reservoirCode;
+            if (reservoirCode == "0") return;
+            if (regex_match(reservoirCode, pattern)) break;
+            setColorRed();
+            cout << "Invalid code\n";
+            resetColor();
+        }
+        disabledReservoirs.insert(Location(0, reservoirCode));
     }
 }
 
@@ -272,11 +286,18 @@ void Menu::printFlowToAllCities() {
 
 void Menu::printFlowToCity() {
     clearScreen();
-    int id;
-    cout << "What is the id of the city?\n";
-    id = getValidInt();
+    regex pattern("^C_[1-9]\\d*$");
+    string cityCode;
+    while (true) {
+        cout << "What is the code of the city?\n";
+        cin >> cityCode;
+        if (regex_match(cityCode, pattern)) break;
+        setColorRed();
+        cout << "Invalid code\n";
+        resetColor();
+    }
     try {
-        cout << manager.flowToCity(Location(id, "C_" + to_string(id))) << endl;
+        cout << manager.flowToCity(Location(stoi(cityCode.erase(0, 2)), cityCode)) << endl;
         cout << "Note: this is the maximum theoretical flow if there were no other cities.\n";
     } catch (const exception &e) {
         setColorRed();
