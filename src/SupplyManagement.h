@@ -169,6 +169,8 @@ public:
      * @param target The target city.
      * @return The flow to the given city.
      */
+
+    void compensate();
 private:
     Graph<Location> network;
     string cityFile;
