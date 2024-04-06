@@ -1,24 +1,31 @@
-//
-// Created by jose on 3/3/24.
-//
 #include "src/SupplyManagement.h"
+#include "src/Menu.h"
 #include <sstream>
 #include <iostream>
 
 int main() {
-    cout << "here" << endl;
-    SupplyManagement managerTester = SupplyManagement("../data/Cities_Madeira.csv", "../data/Reservoirs_Madeira.csv",
-                                                      "../data/Stations_Madeira.csv", "../data/Pipes_Madeira.csv");
-    //MAYBE CALL OF THESE IN ONE SINGLE FUNCTION
-    managerTester.createSupers();
-    managerTester.readCities();
-    managerTester.readReservoirs();
-    managerTester.readStations();
-    managerTester.readPipes();
-    managerTester.checkWaterAvailability();
-    set<Location> reservoirs;
-    reservoirs.insert(Location(11, "R_11"));
-    reservoirs.insert(Location(10, "R_10"));
-    managerTester.brokenReservoirFlow(reservoirs);
+    bool useMadeiraCSV = true;
+
+    string cityFile = "../data/Cities.csv";
+    string reservoirFile = "../data/Reservoir.csv";
+    string stationFile = "../data/Stations.csv";
+    string pipeFile = "../data/Pipes.csv";
+    if (useMadeiraCSV) {
+        cityFile = "../data/Cities_Madeira.csv";
+        reservoirFile = "../data/Reservoirs_Madeira.csv";
+        stationFile = "../data/Stations_Madeira.csv";
+        pipeFile = "../data/Pipes_Madeira.csv";
+    }
+
+    SupplyManagement manager = SupplyManagement(cityFile, reservoirFile, stationFile, pipeFile);
+
+    manager.createSupers();
+    manager.readCities();
+    manager.readReservoirs();
+    manager.readStations();
+    manager.readPipes();
+    Menu menu(manager);
+    menu.start();
+
     return 0;
 }
