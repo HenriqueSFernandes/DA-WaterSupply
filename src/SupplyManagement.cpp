@@ -289,44 +289,6 @@ void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
     }
 }
 
-
-int SupplyManagement::pumpingFlow(set<Location> PumpingStations) {
-    resetNetwork();
-    int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    map<string, int> cityValue;
-    for (auto v: network.getVertexSet()) {
-        string s;
-        s = v->getInfo().getCode();
-        for (auto e: v->getAdj()) {
-            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
-                cityValue[s] = e->getFlow();
-            }
-
-        }
-    }
-    resetNetwork();
-    removePumpingStations(PumpingStations);
-    int res = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    for (auto v: network.getVertexSet()) {
-        string city;
-        city = v->getInfo().getCode();
-        for (auto e: v->getAdj()) {
-            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
-                if (cityValue[city] > e->getFlow()) {
-                    cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
-                         << v->getInfo().getMunicipality() << endl;
-                }
-
-            };
-        }
-    }
-    int dif = prev - res;
-    cout << "TOTAL " << res << " DIFFERENCE " << dif << endl;
-
-
-    return res;
-}
-
 vector<pair<Location, int>> SupplyManagement::checkWaterAvailability() {
     resetNetwork();
     edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
@@ -351,46 +313,6 @@ void SupplyManagement::removeReservoirs(set<Location> reservoirs) {
     }
 }
 
-int SupplyManagement::brokenReservoirFlow(set<Location> reservoirs) {
-    resetNetwork();
-    int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    map<string, int> cityValue;
-    for (auto v: network.getVertexSet()) {
-        string s;
-        s = v->getInfo().getCode();
-        // TODO change this to adj[0]
-        for (auto e: v->getAdj()) {
-            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
-                cityValue[s] = e->getFlow();
-            }
-        }
-    }
-    resetNetwork();
-    removeReservoirs(reservoirs);
-    int res = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    for (auto v: network.getVertexSet()) {
-        string city;
-        city = v->getInfo().getCode();
-        for (auto e: v->getAdj()) {
-            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
-                if (cityValue[city] > e->getFlow()) {
-                    if (v->getInfo().getDemand() <= e->getFlow())
-                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
-                             << v->getInfo().getMunicipality() << " BUT IT'S STILL "
-                             << e->getFlow() - v->getInfo().getDemand() << " ABOVE DEMAND" << endl;
-                    else
-                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
-                             << v->getInfo().getMunicipality() << " WHICH NOW HAS A DEFICIT OF "
-                             << v->getInfo().getDemand() - e->getFlow() << endl;
-                }
-            };
-        }
-    }
-    int dif = prev - res;
-    cout << "TOTAL " << res << " DIFFERENCE " << dif << endl;
-    return res;
-}
-
 void SupplyManagement::removePipes(const set<pair<Location, Location>> &pipe_ends) {
     if (pipe_ends.empty()) return;
     for (const auto &ends: pipe_ends) {
@@ -405,50 +327,6 @@ void SupplyManagement::removePipes(const set<pair<Location, Location>> &pipe_end
             }
         }
     }
-}
-
-int SupplyManagement::brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends) {
-    resetNetwork();
-    int prev = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    map<string, int> cityValue;
-    for (auto v: network.getVertexSet()) {
-        string s;
-        s = v->getInfo().getCode();
-        for (auto e: v->getAdj()) {
-            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
-                cityValue[s] = e->getFlow();
-            }
-
-        }
-    }
-    resetNetwork();
-    removePipes(pipe_ends);
-
-    int res = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
-    for (auto v: network.getVertexSet()) {
-        string city;
-        city = v->getInfo().getCode();
-        for (auto e: v->getAdj()) {
-            if (v->getInfo().getType() == "C" && e->getDest()->getInfo().getCode() == "SINK") {
-                if (cityValue[city] > e->getFlow()) {
-                    if (v->getInfo().getDemand() <= e->getFlow())
-                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
-                             << v->getInfo().getMunicipality() << " BUT IT'S STILL "
-                             << e->getFlow() - v->getInfo().getDemand() << " ABOVE DEMAND" << endl;
-                    else
-                        cout << "THERE WAS A LOSS OF " << cityValue[city] - e->getFlow() << " IN CITY "
-                             << v->getInfo().getMunicipality() << " WHICH NOW HAS A DEFICIT OF "
-                             << v->getInfo().getDemand() - e->getFlow() << endl;
-                }
-
-            };
-        }
-    }
-    int dif = prev - res;
-    cout << "TOTAL " << res << " DIFFERENCE " << dif << endl;
-
-
-    return res;
 }
 
 pair<vector<cityFlow>, int> SupplyManagement::flowToAllCities() {
