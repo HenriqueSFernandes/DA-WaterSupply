@@ -209,11 +209,12 @@ int SupplyManagement::edmondsKarp(Location source, Location target) {
     // O algorithmo de edmond karp uso bfs
     int curflow = -1;
     int res = 0;
-    //initiateGraphFlow(&network);
+    initiateGraphFlow(&network);
     while (curflow != 0) {
         setUnvisited(&network);
         curflow = bfsEdmond(source, target);
         res += curflow;
+        cout<<curflow<<endl;
     }
     return res;
 }
@@ -240,7 +241,6 @@ int SupplyManagement::bfsEdmond(Location source, Location target) {
                 edge = cur->getPath();
                 while ((edge != NULL)) {
                     edge->setFlow(edge->getFlow() + bottleNeck);
-                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity() + bottleNeck);
                     edge->getReverse()->setCapacity(edge->getReverse()->getCapacity() + bottleNeck);
                     edge = edge->getOrig()->getPath();
                 }
@@ -480,24 +480,92 @@ void SupplyManagement::getNetworkStats(double & avg, double  &var, double  &maxi
 }
 
 int SupplyManagement::edmondsKarpBalance(Location source, Location target) {
-    int constant = 10; // Constant number of iterations
+    // O algorithmo de edmond karp uso bfs
+    double avg=0;
+    double var=0; //unused
+    double max=0; //unused
+    double ratio=avg;
     int curflow = -1;
     int res = 0;
-    //initiateGraphFlow(&network);
-        curflow = -1; // Reset curflow before running Edmonds-Karp
-        while (curflow != 0) {
-            setUnvisited(&network);
-            curflow = bfsEdmondBalance(source, target);
-            res += curflow;
+    int numedges=0;
+    int numSelected=0;
+    initiateGraphFlow(&network);
+    while (true) {
+        //cout<<"RATIO IS"<<ratio<<endl;
+        numSelected=0;
+        numedges=0;
+        for( auto vertex : network.getVertexSet()){
+            for( auto edge : vertex->getAdj()){
+                if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+                if((edge->getCapacity()-edge->getFlow())/(edge->getCapacity())>ratio){
+                    edge->setSelected(true);
+                    numSelected++;
+                }else{
+                    edge->setSelected(false);
+                }
+                numedges++;
 
+            }
 
         }
-        cout<<res<<endl;
+        for( auto vertex : network.getVertexSet()){
+            for( auto edge : vertex->getAdj()){
+                if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+                if(!edge->isSelected()){
 
+                    double numEmptyPipes=0;
+                    double tot=0;
+                    double soma=0;
+                    for( auto edge : edge->getDest()->getAdj()){
+                        if(edge->isSelected())numEmptyPipes++;
+                        tot++;
+                        soma+=edge->getCapacity()-edge->getFlow();
+
+                    }
+                    for( auto edge : edge->getOrig()->getAdj()){
+                        if(edge->isSelected())numEmptyPipes++;
+                        tot++;
+                        soma+=edge->getCapacity()-edge->getFlow();
+
+                    }
+                    double limit=soma/tot;
+                    //cout<<"LIMIT IS "<<limit<<endl;
+                    //cout<<"CAP- FLOW"<<edge->getCapacity()-edge->getFlow()<<endl;
+                    //cout<<"BONS VIZINHOS"<<numEmptyPipes/tot<<endl;
+
+                    if((numEmptyPipes/tot >0.75) && (edge->getCapacity()-edge->getFlow())> 0  ){
+                        edge->setSelected(true);
+                        //cout<<"HIT"<<endl;
+                    }
+                }
+
+            }
+
+        }
+        //cout<<"SELECTED"<<numSelected<<" OUT OF " <<numedges<<endl;
+        setUnvisited(&network);
+        curflow = bfsEdmondBalance(source, target);
+        res += curflow;
+        getNetworkStats(avg,var,max);
+        if(curflow==0){
+            //cout<<"CURFLOW IS 0"<<endl;
+            if(numSelected==numedges)
+                return res;
+            else{
+                //cout<<"LOWER BOUND"<<endl;
+                ratio-= sqrt(var)*0.1; //relaxar a restricao
+            }
+        }else{
+            //cout<<"CAN UP"<<endl;
+            ratio=avg+sqrt(var); // metade mais a meio desvio padrao de distancia
+        }
+
+        cout<<curflow<<endl;
+
+    }
 
     return res;
 }
-
 
 int SupplyManagement::bfsEdmondBalance(Location source, Location target) {
 
