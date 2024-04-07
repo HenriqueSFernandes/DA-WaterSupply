@@ -6,7 +6,7 @@
 
 int main() {
 
-    bool useMadeiraCSV = true;
+    bool useMadeiraCSV = false;
 
     string cityFile = "../data/Cities.csv";
     string reservoirFile = "../data/Reservoir.csv";
@@ -27,7 +27,7 @@ int main() {
     manager.readStations();
     manager.readPipes();
     GraphicalUnit graphicalUnit;
-
+    manager.copy();
     Menu menu(manager, graphicalUnit, useMadeiraCSV);
     menu.start();
 
