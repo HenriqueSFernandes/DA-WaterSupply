@@ -6,7 +6,10 @@
 #include "Graph.h"
 #include "Location.h"
 #include <set>
+#include <map>
+#include <string>
 #include <ostream>
+
 
 using namespace std;
 
@@ -78,6 +81,9 @@ public:
      * @param target The target location.
      * @return The flow between the 2 locations.
      */
+
+    void copy();
+    void visitByDefault();
     int edmondsKarp(Location source, Location target);
 
     /**
@@ -165,8 +171,52 @@ public:
      */
     void removePipes(const set<pair<Location, Location>> &pipe_ends);
 
+    /**
+     * @brief This function evaluates if the cities are receiving enough water if one or more pumping stations are removed.
+     * @param PumpingStations The pumping stations to remove.
+     * @return The difference in flow after removing the pumping stations.
+     */
+    int pumpingFlow(set<Location> PumpingStations);
+    /**
+     * @brief This function evaluates statistics of flow tension along the pipes.
+     * @param AVG The average flow tension,Var the variance of the flow tension, Max the maximum flow tension.
+     */
+    void getNetworkStats(double &avg, double &var, double &max);
+
+    /**
+     * @brief The Edmonds Karp algorithms for finding the max flow between 2 locations.
+     * @param source The source location.
+     * @param target The target location.
+     * @return The flow between the 2 locations.
+     */
+    int edmondsKarpBalance(Location source, Location target);
+
+    /**
+     * @brief Auxiliary BFS function that is used in the edmondsKarp() function.
+     * @param source The source location.
+     * @param target The target location.
+     * @return The flow between the 2 locations.
+     */
+    int bfsEdmondBalance(Location source, Location target);
+
+    /**
+     * @brief Helper function for balance that enables edges with active neighbours to also be active
+     */
+    void EnableEdgesWithCloseActiveEdges();
+
+    /**
+     * @brief This method calculates the theoretical maximum flow to a specific city, ignoring the other cities.
+     * It does so by setting every other city processing attribute to false, and the Edmonds Karp algorithm only calculates the flow for a city with the processing attribute as true.
+     * By doing this, the algorithm ignores the other cities and calculates the maximum theoretical flow to the given city.
+     * @param target The target city.
+     * @return The flow to the given city.
+     */
+
+
+    void compensate();
 private:
     Graph<Location> network;
+    map<string ,double > Cap;
     string cityFile;
     string reservoirFile;
     string stationFile;

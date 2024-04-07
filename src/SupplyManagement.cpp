@@ -3,6 +3,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <map>
+#include "math.h"
 
 int parsePoPToInt(const std::string &str) {
     std::string cleanedStr = str;
@@ -200,7 +201,9 @@ int SupplyManagement::edmondsKarp(Location source, Location target) {
         setUnvisited(&network);
         curflow = bfsEdmond(source, target);
         res += curflow;
+
     }
+    cout<<"RESULT "<<res<<endl;
     return res;
 }
 
@@ -269,16 +272,24 @@ cityFlow SupplyManagement::flowToCity(Location target) {
 }
 
 void SupplyManagement::resetNetwork() {
-    for (auto loc: network.getVertexSet()) {
-        loc->setProcesssing(true);
-        loc->setVisited(false);
-        for (auto edge: loc->getAdj()) {
-            edge->setFlow(0);
+    for( auto ver : network.getVertexSet()){
+        for(auto edge : ver->getAdj()){
+            edge->setCapacity(Cap[edge->getOrig()->getInfo().getCode()+edge->getDest()->getInfo().getCode()]);
+           edge->setFlow(0);
+        }
+    }
+
+
+}
+void SupplyManagement::visitByDefault(){
+    for( auto ver : network.getVertexSet()){
+        ver->setVisited(false);
+        ver->setProcesssing(true);
+        for( auto edge : ver->getAdj()){
             edge->setSelected(true);
         }
     }
 }
-
 void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
     if (PumpingStations.empty()) return;
     for (auto ver: network.getVertexSet()) {
@@ -374,10 +385,164 @@ SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservo
     return {{previousGlobalFlow, newGlobalFlow}, impactedCities};
 }
 
+
+    return res;
+}
+
+void SupplyManagement::getNetworkStats(double & avg, double  &var, double  &maximum){
+    avg=0;
+    var=0;
+    maximum=0;
+    double n=0;
+    for( auto vertex : network.getVertexSet()){
+        for( auto edge : vertex->getAdj()){
+            if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getOrig()->getInfo().getCode()=="SINK" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+            avg+=((edge->getCapacity()-edge->getFlow())/edge->getCapacity());
+            var+=((edge->getCapacity()-edge->getFlow())/edge->getCapacity())*((edge->getCapacity()-edge->getFlow())/edge->getCapacity());
+            maximum=max(maximum, (edge->getCapacity()-edge->getFlow())/edge->getCapacity());
+            n++;
+        }
+    }
+    avg/=n;
+    var=(var/n)-avg*avg;
+    return;
+}
+void SupplyManagement::EnableEdgesWithCloseActiveEdges(){
+    for( auto vertex : network.getVertexSet()){ //ALSO ALLOW EDGES THAT DO NOT RESPECT RATIO BUT HAVE MANY CLOSE ONES THAT DO
+        for( auto edge : vertex->getAdj()){
+            if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+            if(!edge->isSelected()){
+
+                double numEmptyPipes=0;
+                double tot=0;
+                double soma=0;
+                for( auto edge : edge->getDest()->getAdj()){
+                    if(edge->isSelected())numEmptyPipes++;
+                    tot++;
+                    soma+=edge->getCapacity()-edge->getFlow();
+
+                }
+                for( auto edge : edge->getOrig()->getAdj()){
+                    if(edge->isSelected())numEmptyPipes++;
+                    tot++;
+                    soma+=edge->getCapacity()-edge->getFlow();
+
+                }
+                if((numEmptyPipes/tot >0.90) && (edge->getCapacity()-edge->getFlow())> 0  ){
+                    edge->setSelected(true);
+                }
+            }
+
+        }
+
+    }
+}
+
+int SupplyManagement::edmondsKarpBalance(Location source, Location target) {
+    double avg=0;
+    double var=0;
+    double max=0;
+    double ratio=avg;
+    int curflow = -1;
+    int res = 0;
+    int numedges=0;
+    int numSelected=0;
+    initiateGraphFlow(&network);
+    while (true) {
+        numSelected=0;
+        numedges=0;
+        for( auto vertex : network.getVertexSet()){ //FILTER EDGES BY RATIO
+            for( auto edge : vertex->getAdj()){
+                if(edge->getCapacity() ==0 || edge->getDest()->getInfo().getCode()=="SINK"  || edge->getOrig()->getInfo().getCode()=="SOURCE" || edge->getDest()->getInfo().getCode()=="SOURCE") continue;
+                if((edge->getCapacity()-edge->getFlow())/(edge->getCapacity())>ratio){
+                    edge->setSelected(true);
+                    numSelected++;
+                }else{
+                    edge->setSelected(false);
+                }
+                numedges++;
+
+            }
+
+        }
+        EnableEdgesWithCloseActiveEdges(); //ALSO ALLOW EDGES THAT DO NOT RESPECT RATIO BUT HAVE MANY CLOSE ONES THAT DO
+        setUnvisited(&network);
+        curflow = bfsEdmondBalance(source, target);
+        res += curflow;
+        getNetworkStats(avg,var,max);
+        if(curflow==0){
+            if(numSelected==numedges) //IF NO MORE FLOW CAN BE ADDED RETURN
+                return res;
+            else{ // TRY TO LOWER THE RATIO TO GET MORE EDGES WORKING
+                ratio-= sqrt(var)*0.1;
+            }
+        }else{ // KEEP RATIO AT AVERAGE STILL HAS FLOW TO ADD
+            ratio=avg;
+        }
+
+        cout<<curflow<<endl;
+
+    }
+
+    return res;
+}
+
+int SupplyManagement::bfsEdmondBalance(Location source, Location target) {
+
+    queue<Vertex<Location> *> myQueue;
+    auto sourceVertex = network.findVertex(source);
+    sourceVertex->setVisited(true);
+    myQueue.push(sourceVertex);
+    while (!myQueue.empty()) {
+        auto cur = myQueue.front();
+        myQueue.pop();
+        if (cur->getInfo() == target) {
+            if (cur->getPath() == NULL) return 0;
+            else {
+                int bottleNeck = cur->getPath()->getCapacity();
+                auto edge = cur->getPath();
+                while (edge != NULL) {
+                    bottleNeck = min((int) (edge->getCapacity() - edge->getFlow()), bottleNeck);
+                    edge = edge->getOrig()->getPath();
+                }
+                int res = bottleNeck;
+                edge = cur->getPath();
+                while ((edge != NULL)) {
+                    edge->setFlow(edge->getFlow() + bottleNeck);
+                    edge->getReverse()->setCapacity(edge->getReverse()->getCapacity() + bottleNeck);
+                    edge = edge->getOrig()->getPath();
+                }
+
+                return res;
+            }
+        }
+        for (auto edge: cur->getAdj()) {
+            if (edge->getCapacity() - edge->getFlow() > 0 && !edge->getDest()->isVisited() &&
+                edge->getDest()->isProcessing() &&
+                edge->isSelected()) { // se ainda n exceder a capacidade e n tiver visitado eu quero visitar
+
+                edge->getDest()->setVisited(true);
+                edge->getDest()->setPath(edge);
+                myQueue.push(edge->getDest());
+            }
+
+        }
+    }
+
+
 ostream &operator<<(ostream &os, const cityFlow &flow) {
     os << "\033[0;36m" << flow.name << "\033[0m" << ", with code " << flow.code << ", has a flow of "
        << "\033[0;36m"
        << flow.flow << "\033[0m" << ".";
     return os;
+}
+    return 0;
+}
+void SupplyManagement::copy() {
+    for( auto ver : network.getVertexSet()){
+        for(auto edge : ver->getAdj()){
+            Cap[edge->getOrig()->getInfo().getCode()+edge->getDest()->getInfo().getCode()]=edge->getCapacity();
+        }
+    }
 }
 
