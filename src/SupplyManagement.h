@@ -6,7 +6,6 @@
 #include "Graph.h"
 #include "Location.h"
 #include <set>
-#include "Menu.h"
 #include <map>
 #include <string>
 #include <ostream>
@@ -97,8 +96,8 @@ public:
      * @param disabledPipes The disabled pipes.
      */
     void checkInfluence(const set<Location> &disabledReservoirs,
-                                          const set<Location> &disabledStations,
-                                          const set<pair<Location, Location>> &disabledPipes);
+                        const set<Location> &disabledStations,
+                        const set<pair<Location, Location>> &disabledPipes);
 
     /**
      * @brief Auxiliary BFS function that is used in the edmondsKarp() function.
@@ -213,6 +212,21 @@ public:
      * @brief Helper function for balance that enables edges with active neighbours to also be active.
      */
     void enableEdgesWithCloseActiveEdges();
+
+    /**
+     * @brief Sets the terminal text color to red.
+     */
+    static void setColorRed();
+
+    /**
+     * @brief Sets the terminal text color to cyan.
+     */
+    static void setColorCyan();
+
+    /**
+     * @brief Reset the terminal text color to default.
+     */
+    static void resetColor();
 
 private:
     Graph<Location> network;
