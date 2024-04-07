@@ -1,5 +1,5 @@
 #include "Menu.h"
-
+#include "GraphicalUnit.h"
 using namespace std;
 
 void Menu::resetColor() {
@@ -232,30 +232,39 @@ void Menu::disableLocationsMenu() {
                 cout << affectedCities.size();
                 resetColor();
                 cout << " affected cities:\n";
-                for (pair<Vertex<Location> *, int> city: affectedCities) {
-                    cout << "\tThe flow in ";
+                string ans;
+                cout<< "Do you wish to see the affected cities in a visual format? (y/n)\n";
+                cin >> ans;
+                if(ans=="y"){
+                    GraphicalUnit graphicalUnit = GraphicalUnit(manager);
+                    graphicalUnit.DisplayToTerminal(affectedCities);
+                }else{
+                    for (pair<Vertex<Location> *, int> city: affectedCities) {
+                        cout << "\tThe flow in ";
+                        setColorCyan();
+                        cout << city.first->getInfo().getMunicipality();
+                        resetColor();
+                        cout << " decreased from ";
+                        setColorCyan();
+                        cout << city.second;
+                        resetColor();
+                        cout << " to ";
+                        setColorCyan();
+                        cout << city.first->getAdj()[0]->getFlow();
+                        resetColor();
+                        cout << ".\n";
+                    }
+                    cout << "The global flow decreased from ";
                     setColorCyan();
-                    cout << city.first->getInfo().getMunicipality();
-                    resetColor();
-                    cout << " decreased from ";
-                    setColorCyan();
-                    cout << city.second;
+                    cout << oldFlow;
                     resetColor();
                     cout << " to ";
                     setColorCyan();
-                    cout << city.first->getAdj()[0]->getFlow();
+                    cout << newFlow;
                     resetColor();
                     cout << ".\n";
                 }
-                cout << "The global flow decreased from ";
-                setColorCyan();
-                cout << oldFlow;
-                resetColor();
-                cout << " to ";
-                setColorCyan();
-                cout << newFlow;
-                resetColor();
-                cout << ".\n";
+
             }
         } else if (option == "6") {
             disabledReservoirs.clear();

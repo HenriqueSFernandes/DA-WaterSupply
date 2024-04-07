@@ -2,8 +2,10 @@
 #include "src/Menu.h"
 #include <sstream>
 #include <iostream>
+#include "src/GraphicalUnit.h"
 
 int main() {
+
     bool useMadeiraCSV = true;
 
     string cityFile = "../data/Cities.csv";
@@ -24,8 +26,11 @@ int main() {
     manager.readReservoirs();
     manager.readStations();
     manager.readPipes();
+    GraphicalUnit graphicalUnit(manager);
+
     Menu menu(manager);
     menu.start();
+
 
     return 0;
 }
