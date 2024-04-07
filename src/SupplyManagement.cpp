@@ -556,8 +556,6 @@ int SupplyManagement::edmondsKarpBalance(const Location &source, const Location 
             ratio = avg;
         }
 
-        cout << curflow << endl;
-
     }
 
     return res;

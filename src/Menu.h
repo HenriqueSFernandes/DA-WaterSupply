@@ -122,6 +122,11 @@ public:
      * @brief This function outputs the flow with disabled locations.
      */
     void printFlowWithDisabledLocations();
+
+    /**
+    * @brief This function outputs the Balance menu
+    */
+    void Balance();
 };
 
 
