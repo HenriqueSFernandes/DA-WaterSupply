@@ -122,6 +122,21 @@ public:
      * @brief This function outputs the flow with disabled locations.
      */
     void printFlowWithDisabledLocations();
+
+    /**
+    * @brief This function outputs the balance menu.
+    */
+    void balance();
+
+    /**
+     * @brief This function checks the current balance.
+     */
+    void checkBalance();
+
+    /**
+     * @brief This function tries to optimize the balance of the network.
+     */
+    void improveBalance();
 };
 
 

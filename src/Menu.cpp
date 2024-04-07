@@ -33,12 +33,14 @@ void Menu::start() {
     cout << "\nHello, welcome to the Water Supply Management System!\n";
     while (true) {
         cout << "\nWhat do you want to do?\n";
-        cout << "1) Analyse the network.\n2) Enable / disable locations.\n0) Exit.\n";
+        cout << "1) Analyse the network.\n2) Enable / disable locations.\n3) Balance network.\n0) Exit.\n";
         cin >> option;
         if (option == "1") {
             analyseMenu();
         } else if (option == "2") {
             disableLocationsMenu();
+        } else if (option == "3") {
+            balance();
         } else if (option == "0") {
             exit(0);
         } else {
@@ -72,6 +74,57 @@ void Menu::analyseMenu() {
             resetColor();
         }
     }
+}
+
+void Menu::balance() {
+    clearScreen();
+    string option;
+    while (true) {
+        cout << "\nWhat do you want to do?\n";
+        cout
+                << "1) Check current balance.\n2) Improve balance.\n0) Exit.\n";
+        cin >> option;
+        if (option == "1") {
+            checkBalance();
+        } else if (option == "2") {
+            improveBalance();
+        } else if (option == "0") {
+            break;
+        } else {
+            setColorRed();
+            cout << "Invalid option, please choose again.\n";
+            resetColor();
+        }
+    }
+}
+
+void Menu::improveBalance() {
+    manager.resetNetwork();
+    manager.edmondsKarpBalance(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    double avg;
+    double var;
+    double maximum;
+    manager.getNetworkStats(avg, var, maximum);
+    setColorCyan();
+    cout << "Average: " << avg << endl;
+    cout << "Variance: " << var << endl;
+    cout << "Maximum: " << maximum << endl;
+    resetColor();
+}
+
+void Menu::checkBalance() {
+    clearScreen();
+    manager.resetNetwork();
+    manager.edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    double avg;
+    double var;
+    double maximum;
+    manager.getNetworkStats(avg, var, maximum);
+    setColorCyan();
+    cout << "Average: " << avg << endl;
+    cout << "Variance: " << var << endl;
+    cout << "Maximum: " << maximum << endl;
+    resetColor();
 }
 
 void Menu::disableLocationsMenu() {

@@ -70,9 +70,9 @@ public:
     void readPipes();
 
     /**
-     * @brief Saves the initial capacity of each edge.
+     * @brief Saves the initial capacity and flow of each edge.
      */
-    void saveCapacityBackup();
+    void saveEdgeBackup();
 
     /**
      * @brief The Edmonds Karp algorithms for finding the max flow between 2 locations.
@@ -96,8 +96,8 @@ public:
      * @param disabledPipes The disabled pipes.
      */
     void checkInfluence(const set<Location> &disabledReservoirs,
-                                          const set<Location> &disabledStations,
-                                          const set<pair<Location, Location>> &disabledPipes);
+                        const set<Location> &disabledStations,
+                        const set<pair<Location, Location>> &disabledPipes);
 
     /**
      * @brief Auxiliary BFS function that is used in the edmondsKarp() function.
@@ -213,9 +213,25 @@ public:
      */
     void enableEdgesWithCloseActiveEdges();
 
+    /**
+     * @brief Sets the terminal text color to red.
+     */
+    static void setColorRed();
+
+    /**
+     * @brief Sets the terminal text color to cyan.
+     */
+    static void setColorCyan();
+
+    /**
+     * @brief Reset the terminal text color to default.
+     */
+    static void resetColor();
+
 private:
     Graph<Location> network;
-    map<string, double> Cap;
+    map<string, double> capacityBackup;
+    map<string, int> flowBackup;
     string cityFile;
     string reservoirFile;
     string stationFile;
