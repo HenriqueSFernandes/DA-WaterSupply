@@ -363,13 +363,17 @@ void SupplyManagement::checkInfluence(const set<Location> &disabledReservoirs,
     source->setInSameScc(true);
 
     for( auto el :disabledPipes){
+        network.findVertex(el.first)->setInSameScc(true);
         bfs(el.first);
+        network.findVertex(el.second)->setInSameScc(true);
         bfs(el.second);
     }
     for( auto el :disabledStations){
+        network.findVertex(el)->setInSameScc(true);
         bfs(el);
     }
     for( auto el :disabledReservoirs){
+        network.findVertex(el)->setInSameScc(true);
         bfs(el);
     }
 
@@ -419,7 +423,9 @@ SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservo
     checkInfluence(disabledReservoirs, disabledStations, disabledPipes);
     for(auto ver : network.getVertexSet()){
         if(!ver->isInSameScc()){
+            cout<<ver->getInfo().getCode()<<endl;
             ver->setProcesssing(false);
+            cout<<"hit"<<endl;
         }
     }
 
