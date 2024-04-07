@@ -28,7 +28,9 @@ public:
      * @param manager Supply manager.
      */
     explicit Menu(SupplyManagement manager, GraphicalUnit graphicalUnit, bool isMadeira) : manager(std::move(manager)),
-                                                                           graphicalUnit(std::move(graphicalUnit)), isMadeira(isMadeira) {}
+                                                                                           graphicalUnit(std::move(
+                                                                                                   graphicalUnit)),
+                                                                                           isMadeira(isMadeira) {}
 
     /**
      * @brief Loops until the input is a valid integer.
