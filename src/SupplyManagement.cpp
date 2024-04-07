@@ -476,37 +476,37 @@ void SupplyManagement::getNetworkStats(double &avg, double &var, double &maximum
             int newFlow = (int) edge->getFlow();
             if (oldFlow == newFlow) {
                 cout << "\tPipe ";
-                Menu::setColorCyan();
+                setColorCyan();
                 cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
-                Menu::resetColor();
+                resetColor();
                 cout << " should remaing the same.\n";
             } else if (oldFlow < newFlow) {
                 cout << "\tThe flow in pipe ";
-                Menu::setColorCyan();
+                setColorCyan();
                 cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
-                Menu::resetColor();
+                resetColor();
                 cout << "should increase from ";
-                Menu::setColorCyan();
+                setColorCyan();
                 cout << oldFlow;
-                Menu::resetColor();
+                resetColor();
                 cout << " to ";
-                Menu::setColorCyan();
+                setColorCyan();
                 cout << newFlow;
-                Menu::resetColor();
+                resetColor();
                 cout << ".\n";
             } else {
                 cout << "\tThe flow in pipe ";
-                Menu::setColorCyan();
+                setColorCyan();
                 cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
-                Menu::resetColor();
+                resetColor();
                 cout << "should decrease from ";
-                Menu::setColorCyan();
+                setColorCyan();
                 cout << oldFlow;
-                Menu::resetColor();
+                resetColor();
                 cout << " to ";
-                Menu::setColorCyan();
+                setColorCyan();
                 cout << newFlow;
-                Menu::resetColor();
+                resetColor();
                 cout << ".\n";
             }
         }
@@ -659,4 +659,16 @@ void SupplyManagement::saveEdgeBackup() {
                        edge->getDest()->getInfo().getCode()] = (int) edge->getFlow();
         }
     }
+}
+
+void SupplyManagement::resetColor() {
+    cout << "\033[0m";
+}
+
+void SupplyManagement::setColorRed() {
+    cout << "\033[0;31m";
+}
+
+void SupplyManagement::setColorCyan() {
+    cout << "\033[0;36m";
 }
