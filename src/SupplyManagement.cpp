@@ -612,10 +612,11 @@ ostream &operator<<(ostream &os, const cityFlow &flow) {
        << flow.flow << "\033[0m" << ".";
     return os;
 }
+
 void SupplyManagement::copy() {
-    for( auto ver : network.getVertexSet()){
-        for(auto edge : ver->getAdj()){
-            Cap[edge->getOrig()->getInfo().getCode()+edge->getDest()->getInfo().getCode()]=edge->getCapacity();
+    for (auto ver: network.getVertexSet()) {
+        for (auto edge: ver->getAdj()) {
+            Cap[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()] = edge->getCapacity();
         }
     }
 }
