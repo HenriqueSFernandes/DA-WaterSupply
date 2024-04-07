@@ -460,7 +460,6 @@ void SupplyManagement::getNetworkStats(double &avg, double &var, double &maximum
     var = 0;
     maximum = 0;
     double n = 0;
-    cout << "Here are the changes to make the network balanced:\n";
     for (auto vertex: network.getVertexSet()) {
         for (auto edge: vertex->getAdj()) {
             if (edge->getCapacity() == 0 || edge->getDest()->getInfo().getCode() == "SINK" ||
@@ -472,43 +471,6 @@ void SupplyManagement::getNetworkStats(double &avg, double &var, double &maximum
                    ((edge->getCapacity() - edge->getFlow()) / edge->getCapacity());
             maximum = max(maximum, (edge->getCapacity() - edge->getFlow()) / edge->getCapacity());
             n++;
-            int oldFlow = flowBackup[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()];
-            int newFlow = (int) edge->getFlow();
-            if (oldFlow == newFlow) {
-                cout << "\tPipe ";
-                setColorCyan();
-                cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
-                resetColor();
-                cout << " should remaing the same.\n";
-            } else if (oldFlow < newFlow) {
-                cout << "\tThe flow in pipe ";
-                setColorCyan();
-                cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
-                resetColor();
-                cout << "should increase from ";
-                setColorCyan();
-                cout << oldFlow;
-                resetColor();
-                cout << " to ";
-                setColorCyan();
-                cout << newFlow;
-                resetColor();
-                cout << ".\n";
-            } else {
-                cout << "\tThe flow in pipe ";
-                setColorCyan();
-                cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
-                resetColor();
-                cout << "should decrease from ";
-                setColorCyan();
-                cout << oldFlow;
-                resetColor();
-                cout << " to ";
-                setColorCyan();
-                cout << newFlow;
-                resetColor();
-                cout << ".\n";
-            }
         }
     }
     avg /= n;
