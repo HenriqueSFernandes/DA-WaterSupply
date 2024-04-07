@@ -26,9 +26,9 @@ int main() {
     manager.readReservoirs();
     manager.readStations();
     manager.readPipes();
-    GraphicalUnit graphicalUnit(manager);
+    GraphicalUnit graphicalUnit(manager, useMadeiraCSV);
 
-    Menu menu(manager);
+    Menu menu(manager, graphicalUnit);
     menu.start();
 
 
