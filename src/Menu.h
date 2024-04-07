@@ -18,6 +18,7 @@ class Menu {
 private:
     SupplyManagement manager;
     GraphicalUnit graphicalUnit;
+    bool isMadeira;
     set<Location> disabledReservoirs;
     set<Location> disabledStations;
     set<pair<Location, Location>> disabledPipes;
@@ -26,8 +27,8 @@ public:
      * @brief Parameterized constructor.
      * @param manager Supply manager.
      */
-    explicit Menu(SupplyManagement manager, GraphicalUnit graphicalUnit) : manager(std::move(manager)),
-                                                                           graphicalUnit(std::move(graphicalUnit)) {}
+    explicit Menu(SupplyManagement manager, GraphicalUnit graphicalUnit, bool isMadeira) : manager(std::move(manager)),
+                                                                           graphicalUnit(std::move(graphicalUnit)), isMadeira(isMadeira) {}
 
     /**
      * @brief Loops until the input is a valid integer.

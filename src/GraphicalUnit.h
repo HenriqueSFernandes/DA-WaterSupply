@@ -14,16 +14,13 @@
  */
 class GraphicalUnit {
 private:
-    SupplyManagement manager;
-    bool isMadeira;
-    map <string, pair<int, int>> cityCoordinates;
+    map<string, pair<int, int>> cityCoordinates;
 public:
     /**
      * @brief Parameterized constructor.
      * @param manager The main controller.
      */
-    explicit GraphicalUnit(SupplyManagement manager, bool isMadeira) : manager(std::move(manager)),
-                                                                       isMadeira(isMadeira) {
+    explicit GraphicalUnit(){
         readCities();
     }
 
@@ -36,7 +33,7 @@ public:
      * @brief This method displays the cities in the terminal.
      * @param affectedCities
      */
-    void DisplayToTerminal(const vector<pair<Vertex<Location> *, int>> &affectedCities);
+    void displayToTerminal(const vector<pair<Vertex<Location> *, int>> &affectedCities);
 };
 
 

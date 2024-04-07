@@ -31,7 +31,7 @@ void GraphicalUnit::readCities() {
     cityCsv.close();
 }
 
-void GraphicalUnit::DisplayToTerminal(const vector<pair<Vertex<Location> *, int>> &affectedCities) {
+void GraphicalUnit::displayToTerminal(const vector<pair<Vertex<Location> *, int>> &affectedCities) {
     prog::Script script = prog::Script();
     script.open("data/portugal.png");
     for (auto el: affectedCities) {
