@@ -99,8 +99,22 @@ void Menu::balance() {
 }
 
 void Menu::improveBalance() {
+    struct flows {
+        int newFlow;
+        int oldFlow;
+    };
+    map<pair<string, string>, flows> pipes;
     manager.resetNetwork();
-    manager.edmondsKarpBalance(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    int newGlobalFlow = manager.edmondsKarpBalance(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    for (auto vertex: manager.getNetwork().getVertexSet()) {
+        for (auto edge: vertex->getAdj()) {
+            string origin = edge->getOrig()->getInfo().getCode();
+            string destination = edge->getDest()->getInfo().getCode();
+            if (origin != "SOURCE" && destination != "SINK") {
+                pipes[{origin, destination}] = {(int) edge->getFlow(), 0};
+            }
+        }
+    }
     double avg;
     double var;
     double maximum;
@@ -110,6 +124,51 @@ void Menu::improveBalance() {
     cout << "Variance: " << var << endl;
     cout << "Maximum: " << maximum << endl;
     resetColor();
+    manager.resetNetwork();
+    int oldGlobalFlow = manager.edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    for (auto vertex: manager.getNetwork().getVertexSet()) {
+        for (auto edge: vertex->getAdj()) {
+            string origin = edge->getOrig()->getInfo().getCode();
+            string destination = edge->getDest()->getInfo().getCode();
+            if (origin != "SOURCE" && destination != "SINK") {
+                pipes[{origin, destination}].oldFlow = (int) edge->getFlow();
+            }
+        }
+    }
+    cout << "Here are the changes:\n";
+    for (auto &pipe: pipes) {
+        int oldFlow = pipe.second.oldFlow;
+        int newFlow = pipe.second.newFlow;
+        if (oldFlow < newFlow) {
+            cout << "\tThe flow in pipe ";
+            setColorCyan();
+            cout << pipe.first.first << " <--> " << pipe.first.second;
+            resetColor();
+            cout << " should increase from ";
+            setColorCyan();
+            cout << oldFlow;
+            resetColor();
+            cout << " to ";
+            setColorCyan();
+            cout << newFlow;
+            resetColor();
+            cout << ".\n";
+        } else if (oldFlow > newFlow) {
+            cout << "\tThe flow in pipe ";
+            setColorCyan();
+            cout << pipe.first.first << " <--> " << pipe.first.second;
+            resetColor();
+            cout << " should decrease from ";
+            setColorCyan();
+            cout << oldFlow;
+            resetColor();
+            cout << " to ";
+            setColorCyan();
+            cout << newFlow;
+            resetColor();
+            cout << ".\n";
+        }
+    }
 }
 
 void Menu::checkBalance() {
