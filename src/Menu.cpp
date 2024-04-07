@@ -42,7 +42,9 @@ void Menu::start() {
         } else if (option == "0") {
             exit(0);
         } else {
+            setColorRed();
             cout << "Invalid option, please choose again.\n";
+            resetColor();
         }
         clearScreen();
     }
@@ -65,7 +67,9 @@ void Menu::analyseMenu() {
         } else if (option == "0") {
             break;
         } else {
+            setColorRed();
             cout << "Invalid option, please choose again.\n";
+            resetColor();
         }
     }
 }
@@ -105,7 +109,9 @@ void Menu::disableLocationsMenu() {
         } else if (option == "0") {
             break;
         } else {
+            setColorRed();
             cout << "Invalid option, please choose again.\n";
+            resetColor();
         }
     }
 }

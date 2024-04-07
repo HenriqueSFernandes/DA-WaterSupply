@@ -20,7 +20,7 @@ public:
      * @brief Parameterized constructor.
      * @param manager The main controller.
      */
-    explicit GraphicalUnit(){
+    explicit GraphicalUnit() {
         readCities();
     }
 
