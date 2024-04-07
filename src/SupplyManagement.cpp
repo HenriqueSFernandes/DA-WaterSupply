@@ -424,9 +424,7 @@ SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservo
     checkInfluence(disabledReservoirs, disabledStations, disabledPipes);
     for (auto ver: network.getVertexSet()) {
         if (!ver->isInSameScc()) {
-            cout << ver->getInfo().getCode() << endl;
             ver->setProcesssing(false);
-            cout << "hit" << endl;
         }
     }
 
@@ -437,12 +435,11 @@ SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservo
     for (auto ver: network.getVertexSet()) {
         ver->setVisited(false);
     }
-    cout << edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (Vertex<Location> *vertex: network.getVertexSet()) {
         if (vertex->getInfo().getType() == "C") {
             int newFlow = (int) vertex->getAdj()[0]->getFlow();
             if (!vertex->isInSameScc()) {
-                cout << "here no" << endl;
                 newFlow = cities[vertex->getInfo().getCode()];
             }
             newGlobalFlow += newFlow;
