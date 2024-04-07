@@ -8,8 +8,21 @@
 #include <set>
 #include <map>
 #include <string>
+#include <ostream>
+
 
 using namespace std;
+
+/**
+ * @brief This struct represents a city with its flow.
+ */
+struct cityFlow {
+    string name;
+    string code;
+    int flow;
+
+    friend ostream &operator<<(ostream &os, const cityFlow &flow);
+};
 
 /**
  * @brief The main class of the program. It is responsible for running all the algorithms and controlling the network.
@@ -82,7 +95,13 @@ public:
      * @param target The target city.
      * @return The flow to the given city.
      */
-    int FlowToCity(Location target);
+    cityFlow flowToCity(Location target);
+
+    /**
+     * @brief This method calculates the actual flow to all cities.
+     * @return The flow to all cities and the total flow.
+     */
+    pair<vector<cityFlow>, int> flowToAllCities();
 
     /**
      * @brief Resets the network by setting the processing to true and the visited to false.
@@ -93,27 +112,26 @@ public:
      * @brief Checks if the cities are receiving enough water.
      * @return A vector with the cities that are not receiving enough water.
      */
-    vector<Location> checkWaterAvailability();
+    vector<pair<Location, int>> checkWaterAvailability();
 
     /**
      * @brief Removes one or more reservoirs by setting their processing attribute to false.
      * @param reservoir
      */
-    void removeReservoirs(set<Location> PumpingStations );
+    void removeReservoirs(set<Location> PumpingStations);
 
     /**
-     * @brief This function evaluates if the cities are receiving enough water if one or more reservoirs are removed.
-     * @param reservoir The reservoir to be removed.
-     * @return The difference in flow after the removal.
+     * @brief This function calculates the impact of removing reservoirs, pumping stations and pipes on the flow of the network.
+     * @param disabledReservoirs The disabled reservoirs.
+     * @param disabledStations The disabled pumping stations.
+     * @param disabledPipes The disabled pipes.
+     * Additional information about the return value:
+     * It's a pair. The first element is another pair with the old flow and the new flow. The second element is a vector of pairs. The first element is a pointer to the vertex, an the second is the original flow.
+     * @return The global flow before and after disabling the locations and the affected cities.
      */
-    int brokenReservoirFlow(set<Location> reservoirs);
-
-    /**
-     * @brief This function evaluates if the cities are receiving enough water if one or more pipes are removed.
-     * @param pipe_ends The pipes to be removed.
-     * @return The difference in flow after the removal.
-     */
-    int brokenPipeFlow(const set<pair<Location, Location>> &pipe_ends);
+    pair<pair<int, int>, vector<pair<Vertex<Location> *, int>>>
+    flowWithDisabledLocations(const set<Location> &disabledReservoirs, const set<Location> &disabledStations,
+                              const set<pair<Location, Location>> &disabledPipes);
 
     /**
      * @brief Network getter.
@@ -137,7 +155,7 @@ public:
      * @brief Removes a pipe by setting its selected attribute to false.
      * @param pipe_ends The pipe to be removed.
      */
-    void removePipes(const set<pair<Location, Location>> &pipe_ends);
+    void removePipes(const set<pair<Location, Location>>
 
     /**
      * @brief This function evaluates if the cities are receiving enough water if one or more pumping stations are removed.
@@ -179,6 +197,7 @@ public:
      * @param target The target city.
      * @return The flow to the given city.
      */
+
 
     void compensate();
 private:
