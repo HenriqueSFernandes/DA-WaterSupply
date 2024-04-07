@@ -6,7 +6,7 @@
 
 int main() {
 
-    bool useMadeiraCSV = true;
+    bool useMadeiraCSV = false;
 
     string cityFile = "../data/Cities.csv";
     string reservoirFile = "../data/Reservoir.csv";
