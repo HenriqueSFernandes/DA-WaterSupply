@@ -273,9 +273,12 @@ cityFlow SupplyManagement::flowToCity(Location target) {
 
 void SupplyManagement::resetNetwork() {
     for (auto ver: network.getVertexSet()) {
+        ver->setProcesssing(true);
+        ver->setVisited(false);
         for (auto edge: ver->getAdj()) {
             edge->setCapacity(Cap[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()]);
             edge->setFlow(0);
+            edge->setSelected(true);
         }
     }
 
@@ -533,4 +536,11 @@ ostream &operator<<(ostream &os, const cityFlow &flow) {
        << "\033[0;36m"
        << flow.flow << "\033[0m" << ".";
     return os;
+}
+void SupplyManagement::copy() {
+    for( auto ver : network.getVertexSet()){
+        for(auto edge : ver->getAdj()){
+            Cap[edge->getOrig()->getInfo().getCode()+edge->getDest()->getInfo().getCode()]=edge->getCapacity();
+        }
+    }
 }

@@ -27,7 +27,7 @@ int main() {
     manager.readStations();
     manager.readPipes();
     GraphicalUnit graphicalUnit;
-
+    manager.copy();
     Menu menu(manager, graphicalUnit, useMadeiraCSV);
     menu.start();
 
