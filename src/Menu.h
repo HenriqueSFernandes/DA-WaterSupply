@@ -124,9 +124,13 @@ public:
     void printFlowWithDisabledLocations();
 
     /**
-    * @brief This function outputs the Balance menu
+    * @brief This function outputs the balance menu
     */
-    void Balance();
+    void balance();
+
+    void checkBalance();
+
+    void improveBalance();
 };
 
 

@@ -203,7 +203,6 @@ int SupplyManagement::edmondsKarp(Location source, Location target) {
         res += curflow;
 
     }
-    cout << "RESULT " << res << endl;
     return res;
 }
 
