@@ -275,10 +275,12 @@ void SupplyManagement::resetNetwork() {
     for (auto ver: network.getVertexSet()) {
         ver->setProcesssing(true);
         ver->setVisited(false);
+        ver->setInSameScc(false);
         for (auto edge: ver->getAdj()) {
             edge->setCapacity(Cap[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()]);
             edge->setFlow(0);
             edge->setSelected(true);
+
         }
     }
 
@@ -350,6 +352,61 @@ pair<vector<cityFlow>, int> SupplyManagement::flowToAllCities() {
     return {cities, totalFlow};
 }
 
+void SupplyManagement::checkInfluence(const set<Location> &disabledReservoirs,
+                                      const set<Location> &disabledStations,
+                                      const set<pair<Location, Location>> &disabledPipes) {
+    resetNetwork();
+    auto sink = network.findVertex(Location(-1, "SOURCE"));
+    sink->setVisited(true);
+    sink->setInSameScc(true);
+    auto source = network.findVertex(Location(-1, "SINK"));
+    source->setVisited(true);
+    source->setInSameScc(true);
+
+    for (auto el: disabledPipes) {
+        network.findVertex(el.first)->setInSameScc(true);
+        bfs(el.first);
+        network.findVertex(el.second)->setInSameScc(true);
+        bfs(el.second);
+    }
+    for (auto el: disabledStations) {
+        network.findVertex(el)->setInSameScc(true);
+        bfs(el);
+    }
+    for (auto el: disabledReservoirs) {
+        network.findVertex(el)->setInSameScc(true);
+        bfs(el);
+    }
+
+}
+
+void SupplyManagement::bfs(Location loc) {
+    std::vector<int> res;
+    // Get the source vertex
+    auto s = network.findVertex(loc);
+    if (s == nullptr) {
+        return;
+    }
+
+
+    // Perform the actual BFS using a queue
+    std::queue<Vertex<Location> *> q;
+    q.push(s);
+    s->setVisited(true);
+    while (!q.empty()) {
+        auto v = q.front();
+        q.pop();
+        for (auto &e: v->getAdj()) {
+            auto w = e->getDest();
+            if (!w->isVisited()) {
+                q.push(w);
+                w->setInSameScc(true);
+                w->setVisited(true);
+            }
+        }
+    }
+}
+
 pair<pair<int, int>, vector<pair<Vertex<Location> *, int>>>
 SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservoirs,
                                             const set<Location> &disabledStations,
@@ -364,13 +421,31 @@ SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservo
         }
     }
     resetNetwork();
+    checkInfluence(disabledReservoirs, disabledStations, disabledPipes);
+    for (auto ver: network.getVertexSet()) {
+        if (!ver->isInSameScc()) {
+            cout << ver->getInfo().getCode() << endl;
+            ver->setProcesssing(false);
+            cout << "hit" << endl;
+        }
+    }
+
     removeReservoirs(disabledReservoirs);
     removePumpingStations(disabledStations);
     removePipes(disabledPipes);
-    int newGlobalFlow = edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
+    int newGlobalFlow = 0;
+    for (auto ver: network.getVertexSet()) {
+        ver->setVisited(false);
+    }
+    cout << edmondsKarp(Location(-1, "SOURCE"), Location(-1, "SINK"));
     for (Vertex<Location> *vertex: network.getVertexSet()) {
         if (vertex->getInfo().getType() == "C") {
             int newFlow = (int) vertex->getAdj()[0]->getFlow();
+            if (!vertex->isInSameScc()) {
+                cout << "here no" << endl;
+                newFlow = cities[vertex->getInfo().getCode()];
+            }
+            newGlobalFlow += newFlow;
             int oldFlow = cities[vertex->getInfo().getCode()];
             if (newFlow < oldFlow) {
                 impactedCities.emplace_back(vertex, oldFlow);
@@ -402,7 +477,7 @@ void SupplyManagement::getNetworkStats(double &avg, double &var, double &maximum
     var = (var / n) - avg * avg;
 }
 
-void SupplyManagement::EnableEdgesWithCloseActiveEdges() {
+void SupplyManagement::enableEdgesWithCloseActiveEdges() {
     for (auto vertex: network.getVertexSet()) { //ALSO ALLOW EDGES THAT DO NOT RESPECT RATIO BUT HAVE MANY CLOSE ONES THAT DO
         for (auto edge: vertex->getAdj()) {
             if (edge->getCapacity() == 0 || edge->getDest()->getInfo().getCode() == "SINK" ||
@@ -429,11 +504,12 @@ void SupplyManagement::EnableEdgesWithCloseActiveEdges() {
                     edge->setSelected(true);
                 }
             }
-
         }
 
     }
+
 }
+
 
 int SupplyManagement::edmondsKarpBalance(const Location &source, const Location &target) {
     double avg = 0;
@@ -465,7 +541,7 @@ int SupplyManagement::edmondsKarpBalance(const Location &source, const Location 
             }
 
         }
-        EnableEdgesWithCloseActiveEdges(); //ALSO ALLOW EDGES THAT DO NOT RESPECT RATIO BUT HAVE MANY CLOSE ONES THAT DO
+        enableEdgesWithCloseActiveEdges(); //ALSO ALLOW EDGES THAT DO NOT RESPECT RATIO BUT HAVE MANY CLOSE ONES THAT DO
         setUnvisited(&network);
         curflow = bfsEdmondBalance(source, target);
         res += curflow;
@@ -538,7 +614,7 @@ ostream &operator<<(ostream &os, const cityFlow &flow) {
     return os;
 }
 
-void SupplyManagement::copy() {
+void SupplyManagement::saveCapacityBackup() {
     for (auto ver: network.getVertexSet()) {
         for (auto edge: ver->getAdj()) {
             Cap[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()] = edge->getCapacity();
