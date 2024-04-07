@@ -46,31 +46,26 @@ public:
 
     /**
      * @brief Creates the super source and super sink.
-     * Complexity is O(n), due to the use of findVertex() inside of addVertex().
      */
     void createSupers();
 
     /**
      * @brief Reads the cities from the file.
-     * Complexity is O(n * m) where n is the number of cities in the file and m is the number of vertices already added for each n iteration.
      */
     void readCities();
 
     /**
      * @brief Reads the reservoirs from the file.
-     * Complexity is O(n * m), for the same reason as readCities().
      */
     void readReservoirs();
 
     /**
      * @brief Reads the pumping stations from the file.
-     * Complexity is O(n * m), for the same reason as readCities().
      */
     void readStations();
 
     /**
      * @brief Reads the pipes from the file.
-     * Complexity is O(n * m), for the same reason as readCities().
      */
     void readPipes();
 
@@ -172,12 +167,6 @@ public:
     void removePipes(const set<pair<Location, Location>> &pipe_ends);
 
     /**
-     * @brief This function evaluates if the cities are receiving enough water if one or more pumping stations are removed.
-     * @param PumpingStations The pumping stations to remove.
-     * @return The difference in flow after removing the pumping stations.
-     */
-    int pumpingFlow(set<Location> PumpingStations);
-    /**
      * @brief This function evaluates statistics of flow tension along the pipes.
      * @param AVG The average flow tension,Var the variance of the flow tension, Max the maximum flow tension.
      */
@@ -189,7 +178,7 @@ public:
      * @param target The target location.
      * @return The flow between the 2 locations.
      */
-    int edmondsKarpBalance(Location source, Location target);
+    int edmondsKarpBalance(const Location& source, const Location& target);
 
     /**
      * @brief Auxiliary BFS function that is used in the edmondsKarp() function.
@@ -197,7 +186,7 @@ public:
      * @param target The target location.
      * @return The flow between the 2 locations.
      */
-    int bfsEdmondBalance(Location source, Location target);
+    int bfsEdmondBalance(const Location& source, const Location& target);
 
     /**
      * @brief Helper function for balance that enables edges with active neighbours to also be active
@@ -213,7 +202,6 @@ public:
      */
 
 
-    void compensate();
 private:
     Graph<Location> network;
     map<string ,double > Cap;
