@@ -58,6 +58,9 @@ public:
 
     void removeOutgoingEdges();
 
+    bool isInSameScc() const;
+    void setInSameScc(bool inSameScc);
+
 protected:
     T info;                // info node
     std::vector<Edge<T> *> adj;  // outgoing edges
@@ -67,6 +70,7 @@ protected:
     bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree; // used by topsort
     double dist = 0;
+    bool inSameSCC;
     Edge<T> *path = nullptr;
 
     std::vector<Edge<T> *> incoming; // incoming edges
@@ -240,7 +244,14 @@ void Vertex<T>::removeOutgoingEdges() {
         deleteEdge(edge);
     }
 }
-
+template<class T>
+bool Vertex<T>::isInSameScc() const {
+    return inSameSCC;
+}
+template<class T>
+void Vertex<T>::setInSameScc(bool inSameScc) {
+    inSameSCC = inSameScc;
+}
 template<class T>
 bool Vertex<T>::operator<(Vertex<T> &vertex) const {
     return this->dist < vertex.dist;
@@ -601,6 +612,7 @@ std::vector<T> Graph<T>::bfs(const T &source) const {
             auto w = e->getDest();
             if (!w->isVisited()) {
                 q.push(w);
+                w.setSameSCC(true);
                 w->setVisited(true);
             }
         }

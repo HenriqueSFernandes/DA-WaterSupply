@@ -76,10 +76,14 @@ public:
      * @param target The target location.
      * @return The flow between the 2 locations.
      */
-
+    void bfs(Location loc);
     void copy();
     void visitByDefault();
     int edmondsKarp(Location source, Location target);
+
+    void checkInfluence(const set<Location> &disabledReservoirs,
+                                          const set<Location> &disabledStations,
+                                          const set<pair<Location, Location>> &disabledPipes);
 
     /**
      * @brief Auxiliary BFS function that is used in the edmondsKarp() function.
