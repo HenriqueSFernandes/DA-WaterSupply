@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <cstdlib>
+#include <regex>
 #include "SupplyManagement.h"
 
 /**
@@ -46,6 +48,21 @@ public:
     static void resetColor();
 
     /**
+     * @brief This function outputs the currently disabled reservoirs.
+     */
+    void printCurrentlyDisabledReservoirs();
+
+    /**
+     * @brief This function outputs the currently disabled pumping stations.
+     */
+    void printCurrentlyDisabledStations();
+
+    /**
+     * @brief This function outputs the currently disabled pipes.
+     */
+    void printCurrentlyDisabledPipes();
+
+    /**
      * @brief Main menu.
      */
     void start();
@@ -59,6 +76,46 @@ public:
      * @brief Menu for enabling or disabling locations.F
      */
     void disableLocationsMenu();
+
+    /**
+     * @brief This function clear the screen. It should work on all platforms.
+     */
+    static void clearScreen();
+
+    /**
+     * @brief This function print the flow to a specific city.
+     */
+    void printFlowToCity();
+
+    /**
+     * @brief This function prints the flow to all cities.
+     */
+    void printFlowToAllCities();
+
+    /**
+     * @brief This function prints the cities that are not receiving enough water.
+     */
+    void printWaterAvailability();
+
+    /**
+     * @brief This function adds reservoirs to the list of disabled reservoirs.
+     */
+    void disableReservoirs();
+
+    /**
+     * @brief This function adds reservoirs to the list of disabled pumping stations.
+     */
+    void disableStations();
+
+    /**
+     * @brief This function adds reservoirs to the list of disabled pipes.
+     */
+    void disablePipes();
+
+    /**
+     * @brief This function outputs the flow with disabled locations.
+     */
+    void printFlowWithDisabledLocations();
 };
 
 
