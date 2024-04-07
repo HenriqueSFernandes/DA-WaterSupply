@@ -294,7 +294,6 @@ void SupplyManagement::removePumpingStations(set<Location> PumpingStations) {
     if (PumpingStations.empty()) return;
     for (auto ver: network.getVertexSet()) {
         if (PumpingStations.find(ver->getInfo()) != PumpingStations.end()) {
-
             ver->setProcesssing(false);
         }
     }

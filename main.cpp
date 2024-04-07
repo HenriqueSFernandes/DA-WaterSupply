@@ -2,6 +2,7 @@
 #include "src/Menu.h"
 #include <sstream>
 #include <iostream>
+#include "src/GraphicalUnit.h"
 
 int main() {
 
@@ -25,8 +26,11 @@ int main() {
     manager.readReservoirs();
     manager.readStations();
     manager.readPipes();
-    Menu menu(manager);
+    GraphicalUnit graphicalUnit;
+
+    Menu menu(manager, graphicalUnit, useMadeiraCSV);
     menu.start();
+
 
     return 0;
 }

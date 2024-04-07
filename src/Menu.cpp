@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "GraphicalUnit.h"
 
 using namespace std;
 
@@ -149,6 +150,18 @@ void Menu::printFlowWithDisabledLocations() {
         cout << newFlow;
         resetColor();
         cout << ".\n\n";
+        string ans;
+        cout << "Do you wish to see the affected cities in a visual format? (y/n)\n";
+        cin >> ans;
+        if (ans == "y") {
+            if (isMadeira) {
+                setColorRed();
+                cout << "This feature is not supported when using the Madeira dataset!\n";
+                resetColor();
+            } else {
+                graphicalUnit.displayToTerminal(affectedCities);
+            }
+        }
     }
 }
 

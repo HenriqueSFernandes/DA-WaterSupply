@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <regex>
 #include "SupplyManagement.h"
+#include "GraphicalUnit.h"
 
 /**
  * @brief Class used to represent a user friendly menu.
@@ -16,6 +17,8 @@
 class Menu {
 private:
     SupplyManagement manager;
+    GraphicalUnit graphicalUnit;
+    bool isMadeira;
     set<Location> disabledReservoirs;
     set<Location> disabledStations;
     set<pair<Location, Location>> disabledPipes;
@@ -24,7 +27,8 @@ public:
      * @brief Parameterized constructor.
      * @param manager Supply manager.
      */
-    explicit Menu(SupplyManagement manager) : manager(std::move(manager)) {}
+    explicit Menu(SupplyManagement manager, GraphicalUnit graphicalUnit, bool isMadeira) : manager(std::move(manager)),
+                                                                           graphicalUnit(std::move(graphicalUnit)), isMadeira(isMadeira) {}
 
     /**
      * @brief Loops until the input is a valid integer.
