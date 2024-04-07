@@ -6,6 +6,7 @@
 #include "Graph.h"
 #include "Location.h"
 #include <set>
+#include "Menu.h"
 #include <map>
 #include <string>
 #include <ostream>
@@ -70,9 +71,9 @@ public:
     void readPipes();
 
     /**
-     * @brief Saves the initial capacity of each edge.
+     * @brief Saves the initial capacity and flow of each edge.
      */
-    void saveCapacityBackup();
+    void saveEdgeBackup();
 
     /**
      * @brief The Edmonds Karp algorithms for finding the max flow between 2 locations.
@@ -215,7 +216,8 @@ public:
 
 private:
     Graph<Location> network;
-    map<string, double> Cap;
+    map<string, double> capacityBackup;
+    map<string, int> flowBackup;
     string cityFile;
     string reservoirFile;
     string stationFile;

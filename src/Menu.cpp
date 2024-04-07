@@ -65,7 +65,7 @@ void Menu::analyseMenu() {
         } else if (option == "2") {
             printFlowToAllCities();
         } else if (option == "3") {
-            balance();
+            printWaterAvailability();
         } else if (option == "0") {
             break;
         } else {

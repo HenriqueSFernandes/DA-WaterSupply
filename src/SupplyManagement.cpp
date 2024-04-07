@@ -276,7 +276,8 @@ void SupplyManagement::resetNetwork() {
         ver->setVisited(false);
         ver->setInSameScc(false);
         for (auto edge: ver->getAdj()) {
-            edge->setCapacity(Cap[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()]);
+            edge->setCapacity(
+                    capacityBackup[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()]);
             edge->setFlow(0);
             edge->setSelected(true);
 
@@ -459,6 +460,7 @@ void SupplyManagement::getNetworkStats(double &avg, double &var, double &maximum
     var = 0;
     maximum = 0;
     double n = 0;
+    cout << "Here are the changes to make the network balanced:\n";
     for (auto vertex: network.getVertexSet()) {
         for (auto edge: vertex->getAdj()) {
             if (edge->getCapacity() == 0 || edge->getDest()->getInfo().getCode() == "SINK" ||
@@ -470,6 +472,43 @@ void SupplyManagement::getNetworkStats(double &avg, double &var, double &maximum
                    ((edge->getCapacity() - edge->getFlow()) / edge->getCapacity());
             maximum = max(maximum, (edge->getCapacity() - edge->getFlow()) / edge->getCapacity());
             n++;
+            int oldFlow = flowBackup[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()];
+            int newFlow = (int) edge->getFlow();
+            if (oldFlow == newFlow) {
+                cout << "\tPipe ";
+                Menu::setColorCyan();
+                cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
+                Menu::resetColor();
+                cout << " should remaing the same.\n";
+            } else if (oldFlow < newFlow) {
+                cout << "\tThe flow in pipe ";
+                Menu::setColorCyan();
+                cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
+                Menu::resetColor();
+                cout << "should increase from ";
+                Menu::setColorCyan();
+                cout << oldFlow;
+                Menu::resetColor();
+                cout << " to ";
+                Menu::setColorCyan();
+                cout << newFlow;
+                Menu::resetColor();
+                cout << ".\n";
+            } else {
+                cout << "\tThe flow in pipe ";
+                Menu::setColorCyan();
+                cout << edge->getOrig()->getInfo().getCode() << " <--> " << edge->getDest()->getInfo().getCode();
+                Menu::resetColor();
+                cout << "should decrease from ";
+                Menu::setColorCyan();
+                cout << oldFlow;
+                Menu::resetColor();
+                cout << " to ";
+                Menu::setColorCyan();
+                cout << newFlow;
+                Menu::resetColor();
+                cout << ".\n";
+            }
         }
     }
     avg /= n;
@@ -611,10 +650,13 @@ ostream &operator<<(ostream &os, const cityFlow &flow) {
     return os;
 }
 
-void SupplyManagement::saveCapacityBackup() {
+void SupplyManagement::saveEdgeBackup() {
     for (auto ver: network.getVertexSet()) {
         for (auto edge: ver->getAdj()) {
-            Cap[edge->getOrig()->getInfo().getCode() + edge->getDest()->getInfo().getCode()] = edge->getCapacity();
+            capacityBackup[edge->getOrig()->getInfo().getCode() +
+                           edge->getDest()->getInfo().getCode()] = edge->getCapacity();
+            flowBackup[edge->getOrig()->getInfo().getCode() +
+                       edge->getDest()->getInfo().getCode()] = (int) edge->getFlow();
         }
     }
 }
