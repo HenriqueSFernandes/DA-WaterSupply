@@ -219,6 +219,16 @@ void Menu::printFlowWithDisabledLocations() {
                 resetColor();
             } else {
                 graphicalUnit.displayToTerminal(affectedCities);
+                string ans2;
+                cout << "Do you wish to save the image? (y/n)\n";
+                cin >> ans2;
+                if (ans2 == "y") {
+                    string filename = "map" + to_string(time(nullptr)) + ".png";
+                    filesystem::copy_file(filesystem::current_path().parent_path() / "data" / "portugalchanged.png",
+                                          filesystem::current_path().parent_path() / "data" /
+                                          filename);
+                    cout << "File saved to " << filesystem::current_path().parent_path() / "data" / filename << ".\n";
+                }
             }
         }
     }
@@ -262,7 +272,7 @@ void Menu::disableStations() {
         printCurrentlyDisabledStations();
         string stationCode;
         while (true) {
-            cout << "Please insert the id of the pumping station (0 to exit)\n";
+            cout << "Please insert the code of the pumping station (0 to exit)\n";
             cin >> stationCode;
             if (stationCode == "0") return;
             if (regex_match(stationCode, pattern)) break;
