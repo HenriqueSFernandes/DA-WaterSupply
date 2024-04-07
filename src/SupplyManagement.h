@@ -6,6 +6,8 @@
 #include "Graph.h"
 #include "Location.h"
 #include <set>
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -60,6 +62,9 @@ public:
      * @param target The target location.
      * @return The flow between the 2 locations.
      */
+
+    void copy();
+    void visitByDefault();
     int edmondsKarp(Location source, Location target);
 
     /**
@@ -163,6 +168,11 @@ public:
     int bfsEdmondBalance(Location source, Location target);
 
     /**
+     * @brief Helper function for balance that enables edges with active neighbours to also be active
+     */
+    void EnableEdgesWithCloseActiveEdges();
+
+    /**
      * @brief This method calculates the theoretical maximum flow to a specific city, ignoring the other cities.
      * It does so by setting every other city processing attribute to false, and the Edmonds Karp algorithm only calculates the flow for a city with the processing attribute as true.
      * By doing this, the algorithm ignores the other cities and calculates the maximum theoretical flow to the given city.
@@ -173,6 +183,7 @@ public:
     void compensate();
 private:
     Graph<Location> network;
+    map<string ,double > Cap;
     string cityFile;
     string reservoirFile;
     string stationFile;
