@@ -435,6 +435,7 @@ SupplyManagement::flowWithDisabledLocations(const set<Location> &disabledReservo
         if (vertex->getInfo().getType() == "C") {
             int newFlow = (int) vertex->getAdj()[0]->getFlow();
             if(!vertex->isInSameScc()){
+                cout<<"here no"<<endl;
                 newFlow = cities[vertex->getInfo().getCode()];
             }
             newGlobalFlow += newFlow;
@@ -496,11 +497,12 @@ void SupplyManagement::EnableEdgesWithCloseActiveEdges() {
                     edge->setSelected(true);
                 }
             }
+            }
 
         }
 
     }
-}
+
 
 int SupplyManagement::edmondsKarpBalance(const Location &source, const Location &target) {
     double avg = 0;
