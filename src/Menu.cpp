@@ -255,8 +255,18 @@ void Menu::printFlowWithDisabledLocations() {
             resetColor();
             cout << " to ";
             setColorCyan();
-            cout << city.first->getAdj()[0]->getFlow();
+            int newCityFlow = (int) city.first->getAdj()[0]->getFlow();
+            cout << newCityFlow;
             resetColor();
+            if (newCityFlow < city.first->getInfo().getDemand()) {
+                cout << ", and it is ";
+                setColorCyan();
+                cout << city.first->getInfo().getDemand() - newCityFlow;
+                resetColor();
+                cout << " below the demand";
+            } else {
+                cout << ", but it is still greater than the demand";
+            }
             cout << ".\n";
         }
         cout << "The global flow decreased from ";
