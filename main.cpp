@@ -48,7 +48,7 @@ int main() {
     manager.readPipes();
 
     GraphicalUnit graphicalUnit;
-    manager.copy();
+    manager.saveCapacityBackup();
     Menu menu(manager, graphicalUnit, useMadeiraCSV);
     menu.start();
 

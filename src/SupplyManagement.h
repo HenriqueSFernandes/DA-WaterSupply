@@ -69,8 +69,10 @@ public:
      */
     void readPipes();
 
-    // TODO add documentation here.
-    void copy();
+    /**
+     * @brief Saves the initial capacity of each edge.
+     */
+    void saveCapacityBackup();
 
     /**
      * @brief The Edmonds Karp algorithms for finding the max flow between 2 locations.
@@ -80,9 +82,19 @@ public:
      * @return The flow between the 2 locations.
      */
     int edmondsKarp(Location source, Location target);
-    void bfs(Location loc);
-    void visitByDefault();
 
+    /**
+     * @brief BFS used to detect connected components.
+     * @param loc The initial location.
+     */
+    void bfs(Location loc);
+
+    /**
+     * @brief Checks which SCCs are affected.
+     * @param disabledReservoirs The disabled reservoirs.
+     * @param disabledStations The disabled stations.
+     * @param disabledPipes The disabled pipes.
+     */
     void checkInfluence(const set<Location> &disabledReservoirs,
                                           const set<Location> &disabledStations,
                                           const set<pair<Location, Location>> &disabledPipes);
@@ -199,7 +211,7 @@ public:
     /**
      * @brief Helper function for balance that enables edges with active neighbours to also be active.
      */
-    void EnableEdgesWithCloseActiveEdges();
+    void enableEdgesWithCloseActiveEdges();
 
 private:
     Graph<Location> network;
