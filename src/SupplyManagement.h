@@ -167,13 +167,15 @@ public:
     void removePipes(const set<pair<Location, Location>> &pipe_ends);
 
     /**
-     * @brief This function evaluates statistics of flow tension along the pipes.
-     * @param AVG The average flow tension,Var the variance of the flow tension, Max the maximum flow tension.
+     * @brief This function evaluates statistics of flow along the pipes.
+     * @param avg The average flow.
+     * @param var The variance of the flow.
+     * @param max The maximum flow.
      */
     void getNetworkStats(double &avg, double &var, double &max);
 
     /**
-     * @brief The Edmonds Karp algorithms for finding the max flow between 2 locations.
+     * @brief This function tries to balance the flow of each pipe.
      * @param source The source location.
      * @param target The target location.
      * @return The flow between the 2 locations.
@@ -181,7 +183,7 @@ public:
     int edmondsKarpBalance(const Location &source, const Location &target);
 
     /**
-     * @brief Auxiliary BFS function that is used in the edmondsKarp() function.
+     * @brief Auxiliary BFS function that is used in the edmondsKarpBalance() function.
      * @param source The source location.
      * @param target The target location.
      * @return The flow between the 2 locations.
@@ -189,7 +191,7 @@ public:
     int bfsEdmondBalance(const Location &source, const Location &target);
 
     /**
-     * @brief Helper function for balance that enables edges with active neighbours to also be active
+     * @brief Helper function for balance that enables edges with active neighbours to also be active.
      */
     void EnableEdgesWithCloseActiveEdges();
 
